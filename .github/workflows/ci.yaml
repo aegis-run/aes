@@ -33,8 +33,7 @@ jobs:
 
       - run: nix develop --command just test
 
-      - run: nix develop --command just cov-lcov
-
+      - run: nix develop --command cargo llvm-cov nextest --all-features --lcov --output-path lcov.info
       - uses: codecov/codecov-action@v4
         with:
           files: lcov.info

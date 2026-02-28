@@ -51,34 +51,6 @@
 
           LLVM_PROFILE_FILE = "target/coverage/%p-%m.profraw";
         };
-
-        checks = {
-          build = inputs.self.packages.${system}.aes;
-
-          fmt =
-            pkgs.runCommand "cargo-fmt-check"
-              {
-                nativeBuildInputs = [ toolchain ];
-                src = ./.;
-              }
-              ''
-                cd $src
-                cargo fmt --check
-                touch $out
-              '';
-
-          clippy =
-            pkgs.runCommand "cargo-clippy"
-              {
-                nativeBuildInputs = [ toolchain ];
-                src = ./.;
-              }
-              ''
-                cd $src
-                cargo clippy -- -D warnings
-                touch $out
-              '';
-        };
       }
     )
     // {

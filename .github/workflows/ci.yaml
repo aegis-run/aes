@@ -11,49 +11,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  check:
-    name: Check (fmt, clippy, deny)
+  validate:
+    name: Validate (Check & Test)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
 
       - run: nix develop --command just check
-
-  test:
-    name: Test + Coverage
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
       - run: nix develop --command just test
-
       - run: nix develop --command cargo insta test --unreferenced=reject
 
-  # fuzz:
-  #   name: Fuzz (60s)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: DeterminateSystems/nix-installer-action@main
-  #     - uses: DeterminateSystems/magic-nix-cache-action@main
-
-  #     - run: nix develop --command cargo fuzz run fuzz_parser -- -max_total_time=60
-  #       working-directory: fuzz
-
   nix-build:
-    name: Nix build
+    name: Nix build & check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - run: nix build
       - run: nix flake check

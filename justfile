@@ -153,7 +153,7 @@ release version:
 # ------------------------------------------------------------------ #
 
 # Run the full CI pipeline locally
-ci: check test snap-test deny audit
+ci: check test snap-test audit
     @echo "✓ CI pipeline passed"
 
 # ------------------------------------------------------------------ #

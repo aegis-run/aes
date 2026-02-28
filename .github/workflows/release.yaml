@@ -12,18 +12,21 @@ jobs:
     name: Verify version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
       - name: Check version matches tag
-        run: |
-          CARGO_VERSION=$(nix develop --command cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
-          if [ "$CARGO_VERSION" != "$TAG_VERSION" ]; then
-            echo "❌ Cargo.toml version ($CARGO_VERSION) does not match tag ($TAG_VERSION)"
-            exit 1
-          fi
-          echo "✓ Version $CARGO_VERSION matches tag"
+        run: nix develop --command just verify-version ${GITHUB_REF_NAME#v}
+        # run: |
+        #   CARGO_VERSION=$(nix develop --command cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+        #   TAG_VERSION="${GITHUB_REF_NAME#v}"
+        #   if [ "$CARGO_VERSION" != "$TAG_VERSION" ]; then
+        #     echo "❌ Cargo.toml version ($CARGO_VERSION) does not match tag ($TAG_VERSION)"
+        #     exit 1
+        #   fi
+        #   echo "✓ Version $CARGO_VERSION matches tag"
 
   build:
     name: Build · ${{ matrix.target }}
@@ -40,9 +43,10 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Build
         run: nix build .#aes

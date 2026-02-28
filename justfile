@@ -65,29 +65,6 @@ snap-test:
     cargo insta test --review
 
 # ------------------------------------------------------------------ #
-# Coverage                                                             #
-# ------------------------------------------------------------------ #
-
-# Generate coverage report and open in browser
-[group("coverage")]
-cov:
-    cargo llvm-cov nextest --all-features --open
-
-# Generate lcov report (used in CI)
-[group("coverage")]
-cov-lcov:
-    mkdir -p {{ llvm_cov_output }}
-    cargo llvm-cov nextest --all-features --lcov --output-path {{ llvm_cov_output }}/lcov.info
-    @echo "lcov report written to {{ llvm_cov_output }}/lcov.info"
-
-# Generate HTML report without opening
-[group("coverage")]
-cov-html:
-    mkdir -p {{ llvm_cov_output }}
-    cargo llvm-cov nextest --all-features --html --output-dir {{ llvm_cov_output }}/html
-    @echo "HTML report written to {{ llvm_cov_output }}/html/index.html"
-
-# ------------------------------------------------------------------ #
 # Dependency management                                                #
 # ------------------------------------------------------------------ #
 
@@ -176,7 +153,7 @@ release version:
 # ------------------------------------------------------------------ #
 
 # Run the full CI pipeline locally
-ci: check test snap-test cov-lcov deny audit
+ci: check test snap-test deny audit
     @echo "✓ CI pipeline passed"
 
 # ------------------------------------------------------------------ #

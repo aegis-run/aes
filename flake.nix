@@ -37,7 +37,6 @@
             pkgs.cargo-audit
             pkgs.cargo-deny
             pkgs.cargo-insta
-            pkgs.cargo-llvm-cov
             pkgs.cargo-fuzz
             pkgs.cargo-nextest
             pkgs.cargo-outdated
@@ -48,8 +47,6 @@
           ];
 
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-
-          LLVM_PROFILE_FILE = "target/coverage/%p-%m.profraw";
         };
       }
     )

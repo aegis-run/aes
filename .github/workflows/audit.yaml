@@ -1,0 +1,41 @@
+name: Scheduled
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit:
+    name: Security audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - run: nix develop --command just audit
+      - run: nix develop --command just deny-advisories
+
+  update-flake:
+    name: Update flake inputs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Update flake inputs
+        run: just nix-update
+
+      - name: Open PR if inputs changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: update flake inputs"
+          title: "chore: weekly flake inputs update"
+          body: "Automated weekly update of `flake.lock`."
+          branch: "automation/flake-update"
+          delete-branch: true

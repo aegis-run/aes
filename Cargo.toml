@@ -1,0 +1,15 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+authors = ["Rizescu Iulian-Ştefan <iulian.stefan.rizescu@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/aegis-run/aes"
+description = "Toolchain for the .aes fine-grained Aegis schema language"
+version = "0.0.1"
+
+edition = "2024"
+rust-version = "1.93"
+
+[workspace.dependencies]

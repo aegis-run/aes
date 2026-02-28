@@ -1,0 +1,6 @@
+.direnv/
+result
+
+target/
+**/*.rs.bk
+aes-old/

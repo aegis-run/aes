@@ -3,4 +3,5 @@ result
 
 target/
 **/*.rs.bk
-aes-old/
+
+.DS_Store

@@ -1,0 +1,20 @@
+[package]
+name = "aes_ast_macros"
+version = "0.0.1"
+authors.workspace = true
+edition.workspace = true
+include = ["/src"]
+license.workspace = true
+publish = false
+repository.workspace = true
+rust-version.workspace = true
+description.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+aes_foundation.workspace = true
+
+quote = "1.0.44"
+syn = { version = "2.0.117", features = ["full"] }

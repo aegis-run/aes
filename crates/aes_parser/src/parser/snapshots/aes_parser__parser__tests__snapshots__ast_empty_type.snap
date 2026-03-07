@@ -1,0 +1,78 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: r.ast
+---
+Ast {
+    types: TypeDefPool {
+        span: [
+            Span {
+                start: 0,
+                size: 12,
+            },
+        ],
+        name: [
+            Span {
+                start: 5,
+                size: 4,
+            },
+        ],
+        lets: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 0,
+                },
+            },
+        ],
+        defs: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 0,
+                },
+            },
+        ],
+    },
+    lets: LetMemberPool {
+        span: [],
+        name: [],
+        expr: [],
+    },
+    defs: DefMemberPool {
+        span: [],
+        name: [],
+        expr: [],
+    },
+    exprs: ExprPool {
+        span: [],
+        term: [],
+    },
+    tests: TestDefPool {
+        span: [],
+        name: [],
+        relations: [],
+        asserts: [],
+    },
+    relations: RelationPool {
+        span: [],
+        resource: [],
+        relation: [],
+        subject: [],
+    },
+    subjects: SubjectPool {
+        span: [],
+        instance: [],
+        permission: [],
+    },
+    asserts: AssertPool {
+        span: [],
+        kind: [],
+        resource: [],
+        permission: [],
+        actor: [],
+    },
+}

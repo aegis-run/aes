@@ -1,0 +1,12 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "render_diagnostics(source, &r.errors)"
+---
+aes::parser(unclosed_delimiter)
+
+  × unclosed '{'
+   ╭─[test.aes:1:8]
+ 1 │ type t { let x = user;
+   ·        ┬
+   ·        ╰── opening '{' here
+   ╰────

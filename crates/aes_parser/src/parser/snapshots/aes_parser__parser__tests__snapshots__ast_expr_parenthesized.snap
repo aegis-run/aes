@@ -1,0 +1,159 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: r.ast
+---
+Ast {
+    types: TypeDefPool {
+        span: [
+            Span {
+                start: 0,
+                size: 31,
+            },
+        ],
+        name: [
+            Span {
+                start: 5,
+                size: 1,
+            },
+        ],
+        lets: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 1,
+                },
+            },
+        ],
+        defs: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 0,
+                },
+            },
+        ],
+    },
+    lets: LetMemberPool {
+        span: [
+            Span {
+                start: 9,
+                size: 20,
+            },
+        ],
+        name: [
+            Span {
+                start: 13,
+                size: 1,
+            },
+        ],
+        expr: [
+            Id {
+                index: 5,
+            },
+        ],
+    },
+    defs: DefMemberPool {
+        span: [],
+        name: [],
+        expr: [],
+    },
+    exprs: ExprPool {
+        span: [
+            Span {
+                start: 18,
+                size: 1,
+            },
+            Span {
+                start: 22,
+                size: 1,
+            },
+            Span {
+                start: 18,
+                size: 5,
+            },
+            Span {
+                start: 17,
+                size: 7,
+            },
+            Span {
+                start: 27,
+                size: 1,
+            },
+            Span {
+                start: 17,
+                size: 11,
+            },
+        ],
+        term: [
+            TypeRef(
+                Span {
+                    start: 18,
+                    size: 1,
+                },
+            ),
+            TypeRef(
+                Span {
+                    start: 22,
+                    size: 1,
+                },
+            ),
+            Binary {
+                op: Union,
+                lhs: Id {
+                    index: 0,
+                },
+                rhs: Id {
+                    index: 1,
+                },
+            },
+            Paren(
+                Id {
+                    index: 2,
+                },
+            ),
+            TypeRef(
+                Span {
+                    start: 27,
+                    size: 1,
+                },
+            ),
+            Binary {
+                op: Intersection,
+                lhs: Id {
+                    index: 3,
+                },
+                rhs: Id {
+                    index: 4,
+                },
+            },
+        ],
+    },
+    tests: TestDefPool {
+        span: [],
+        name: [],
+        relations: [],
+        asserts: [],
+    },
+    relations: RelationPool {
+        span: [],
+        resource: [],
+        relation: [],
+        subject: [],
+    },
+    subjects: SubjectPool {
+        span: [],
+        instance: [],
+        permission: [],
+    },
+    asserts: AssertPool {
+        span: [],
+        kind: [],
+        resource: [],
+        permission: [],
+        actor: [],
+    },
+}

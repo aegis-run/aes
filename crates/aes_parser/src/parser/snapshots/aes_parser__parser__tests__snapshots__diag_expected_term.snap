@@ -1,0 +1,23 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "render_diagnostics(source, &r.errors)"
+---
+aes::lexer(unexpected_character)
+
+  × unexpected character
+   ╭─[test.aes:1:18]
+ 1 │ type t { let x = @; }
+   ·                  ┬
+   ·                  ╰── not valid here
+   ╰────
+
+---
+
+aes::parser(expected_term)
+
+  × expected expression term, found ';'
+   ╭─[test.aes:1:19]
+ 1 │ type t { let x = @; }
+   ·                   ┬
+   ·                   ╰── expected `.relation`, `type`, `type::member`, or `(`
+   ╰────

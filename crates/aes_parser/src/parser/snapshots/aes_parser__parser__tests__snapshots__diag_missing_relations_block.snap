@@ -1,0 +1,36 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "render_diagnostics(source, &r.errors)"
+---
+aes::parser(missing_relations_block)
+
+  × expected 'relations' block, found 'assert'
+   ╭─[test.aes:1:12]
+ 1 │ test "t" { assert( org("a").x( user("b") ) ); }
+   ·            ───┬──
+   ·               ╰── expected 'relations' keyword here
+   ╰────
+  help: a test must begin with `relations { ... }` before any assertions
+
+---
+
+aes::parser(unclosed_delimiter)
+
+  × unclosed '{'
+   ╭─[test.aes:1:10]
+ 1 │ test "t" { assert( org("a").x( user("b") ) ); }
+   ·          ┬ ───┬──
+   ·          │    ╰── expected matching close for '{'
+   ·          ╰── opening '{' here
+   ╰────
+
+---
+
+aes::parser(unexpected_token)
+
+  × unexpected 'assert'
+   ╭─[test.aes:1:12]
+ 1 │ test "t" { assert( org("a").x( user("b") ) ); }
+   ·            ───┬──
+   ·               ╰── not expected here
+   ╰────

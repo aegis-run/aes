@@ -1,0 +1,125 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: r.ast
+---
+Ast {
+    types: TypeDefPool {
+        span: [
+            Span {
+                start: 0,
+                size: 59,
+            },
+        ],
+        name: [
+            Span {
+                start: 5,
+                size: 4,
+            },
+        ],
+        lets: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 2,
+                },
+            },
+        ],
+        defs: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 0,
+                },
+            },
+        ],
+    },
+    lets: LetMemberPool {
+        span: [
+            Span {
+                start: 12,
+                size: 26,
+            },
+            Span {
+                start: 39,
+                size: 18,
+            },
+        ],
+        name: [
+            Span {
+                start: 16,
+                size: 6,
+            },
+            Span {
+                start: 43,
+                size: 6,
+            },
+        ],
+        expr: [
+            Id {
+                index: 0,
+            },
+            Id {
+                index: 1,
+            },
+        ],
+    },
+    defs: DefMemberPool {
+        span: [],
+        name: [],
+        expr: [],
+    },
+    exprs: ExprPool {
+        span: [
+            Span {
+                start: 25,
+                size: 12,
+            },
+            Span {
+                start: 52,
+                size: 4,
+            },
+        ],
+        term: [
+            TypeRef(
+                Span {
+                    start: 25,
+                    size: 12,
+                },
+            ),
+            TypeRef(
+                Span {
+                    start: 52,
+                    size: 4,
+                },
+            ),
+        ],
+    },
+    tests: TestDefPool {
+        span: [],
+        name: [],
+        relations: [],
+        asserts: [],
+    },
+    relations: RelationPool {
+        span: [],
+        resource: [],
+        relation: [],
+        subject: [],
+    },
+    subjects: SubjectPool {
+        span: [],
+        instance: [],
+        permission: [],
+    },
+    asserts: AssertPool {
+        span: [],
+        kind: [],
+        resource: [],
+        permission: [],
+        actor: [],
+    },
+}

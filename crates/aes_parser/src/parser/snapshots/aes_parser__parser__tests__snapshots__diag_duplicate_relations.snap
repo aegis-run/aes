@@ -1,0 +1,13 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "render_diagnostics(source, &r.errors)"
+---
+aes::parser(duplicate_relations_block)
+
+  × duplicate relations block
+   ╭─[test.aes:1:25]
+ 1 │ test "t" { relations {} relations {} }
+   ·                         ────┬────
+   ·                             ╰── only one relations block is allowed per test
+   ╰────
+  help: merge all relation statements into a single `relations { ... }` block

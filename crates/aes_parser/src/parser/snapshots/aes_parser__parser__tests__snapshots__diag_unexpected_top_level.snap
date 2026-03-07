@@ -1,0 +1,12 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "render_diagnostics(source, &r.errors)"
+---
+aes::parser(unexpected_token)
+
+  × unexpected identifier
+   ╭─[test.aes:1:1]
+ 1 │ blah type t {}
+   · ──┬─
+   ·   ╰── not expected here
+   ╰────

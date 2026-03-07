@@ -1,0 +1,556 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: r.ast
+---
+Ast {
+    types: TypeDefPool {
+        span: [
+            Span {
+                start: 13,
+                size: 12,
+            },
+            Span {
+                start: 39,
+                size: 139,
+            },
+            Span {
+                start: 192,
+                size: 170,
+            },
+        ],
+        name: [
+            Span {
+                start: 18,
+                size: 4,
+            },
+            Span {
+                start: 44,
+                size: 12,
+            },
+            Span {
+                start: 197,
+                size: 10,
+            },
+        ],
+        lets: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 0,
+                },
+            },
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 2,
+                },
+            },
+            Range {
+                start: Id {
+                    index: 2,
+                },
+                end: Id {
+                    index: 4,
+                },
+            },
+        ],
+        defs: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 0,
+                },
+            },
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 1,
+                },
+            },
+            Range {
+                start: Id {
+                    index: 1,
+                },
+                end: Id {
+                    index: 2,
+                },
+            },
+        ],
+    },
+    lets: LetMemberPool {
+        span: [
+            Span {
+                start: 75,
+                size: 17,
+            },
+            Span {
+                start: 109,
+                size: 18,
+            },
+            Span {
+                start: 226,
+                size: 23,
+            },
+            Span {
+                start: 266,
+                size: 33,
+            },
+        ],
+        name: [
+            Span {
+                start: 79,
+                size: 5,
+            },
+            Span {
+                start: 113,
+                size: 6,
+            },
+            Span {
+                start: 230,
+                size: 3,
+            },
+            Span {
+                start: 270,
+                size: 6,
+            },
+        ],
+        expr: [
+            Id {
+                index: 0,
+            },
+            Id {
+                index: 1,
+            },
+            Id {
+                index: 3,
+            },
+            Id {
+                index: 6,
+            },
+        ],
+    },
+    defs: DefMemberPool {
+        span: [
+            Span {
+                start: 144,
+                size: 20,
+            },
+            Span {
+                start: 316,
+                size: 32,
+            },
+        ],
+        name: [
+            Span {
+                start: 148,
+                size: 6,
+            },
+            Span {
+                start: 320,
+                size: 4,
+            },
+        ],
+        expr: [
+            Id {
+                index: 2,
+            },
+            Id {
+                index: 9,
+            },
+        ],
+    },
+    exprs: ExprPool {
+        span: [
+            Span {
+                start: 87,
+                size: 4,
+            },
+            Span {
+                start: 122,
+                size: 4,
+            },
+            Span {
+                start: 157,
+                size: 6,
+            },
+            Span {
+                start: 236,
+                size: 12,
+            },
+            Span {
+                start: 279,
+                size: 4,
+            },
+            Span {
+                start: 286,
+                size: 12,
+            },
+            Span {
+                start: 279,
+                size: 19,
+            },
+            Span {
+                start: 327,
+                size: 7,
+            },
+            Span {
+                start: 337,
+                size: 10,
+            },
+            Span {
+                start: 327,
+                size: 20,
+            },
+        ],
+        term: [
+            TypeRef(
+                Span {
+                    start: 87,
+                    size: 4,
+                },
+            ),
+            TypeRef(
+                Span {
+                    start: 122,
+                    size: 4,
+                },
+            ),
+            SelfRef(
+                Span {
+                    start: 158,
+                    size: 5,
+                },
+            ),
+            TypeRef(
+                Span {
+                    start: 236,
+                    size: 12,
+                },
+            ),
+            TypeRef(
+                Span {
+                    start: 279,
+                    size: 4,
+                },
+            ),
+            UsersetTypeRef {
+                ty: Span {
+                    start: 286,
+                    size: 4,
+                },
+                member: Span {
+                    start: 292,
+                    size: 6,
+                },
+            },
+            Binary {
+                op: Union,
+                lhs: Id {
+                    index: 4,
+                },
+                rhs: Id {
+                    index: 5,
+                },
+            },
+            SelfRef(
+                Span {
+                    start: 328,
+                    size: 6,
+                },
+            ),
+            Traversal {
+                relation: Span {
+                    start: 338,
+                    size: 3,
+                },
+                permission: Span {
+                    start: 342,
+                    size: 5,
+                },
+            },
+            Binary {
+                op: Union,
+                lhs: Id {
+                    index: 7,
+                },
+                rhs: Id {
+                    index: 8,
+                },
+            },
+        ],
+    },
+    tests: TestDefPool {
+        span: [
+            Span {
+                start: 376,
+                size: 525,
+            },
+        ],
+        name: [
+            Span {
+                start: 381,
+                size: 11,
+            },
+        ],
+        relations: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 4,
+                },
+            },
+        ],
+        asserts: [
+            Range {
+                start: Id {
+                    index: 0,
+                },
+                end: Id {
+                    index: 2,
+                },
+            },
+        ],
+    },
+    relations: RelationPool {
+        span: [
+            Span {
+                start: 492,
+                size: 21,
+            },
+            Span {
+                start: 539,
+                size: 20,
+            },
+            Span {
+                start: 648,
+                size: 26,
+            },
+            Span {
+                start: 700,
+                size: 20,
+            },
+        ],
+        resource: [
+            Instance {
+                ty: Span {
+                    start: 443,
+                    size: 12,
+                },
+                ident: Span {
+                    start: 456,
+                    size: 6,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 443,
+                    size: 12,
+                },
+                ident: Span {
+                    start: 456,
+                    size: 6,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 603,
+                    size: 10,
+                },
+                ident: Span {
+                    start: 614,
+                    size: 4,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 603,
+                    size: 10,
+                },
+                ident: Span {
+                    start: 614,
+                    size: 4,
+                },
+            },
+        ],
+        relation: [
+            Span {
+                start: 492,
+                size: 5,
+            },
+            Span {
+                start: 539,
+                size: 6,
+            },
+            Span {
+                start: 648,
+                size: 3,
+            },
+            Span {
+                start: 700,
+                size: 6,
+            },
+        ],
+        subject: [
+            Id {
+                index: 0,
+            },
+            Id {
+                index: 1,
+            },
+            Id {
+                index: 2,
+            },
+            Id {
+                index: 3,
+            },
+        ],
+    },
+    subjects: SubjectPool {
+        span: [
+            Span {
+                start: 499,
+                size: 13,
+            },
+            Span {
+                start: 547,
+                size: 11,
+            },
+            Span {
+                start: 653,
+                size: 20,
+            },
+            Span {
+                start: 708,
+                size: 11,
+            },
+        ],
+        instance: [
+            Instance {
+                ty: Span {
+                    start: 499,
+                    size: 4,
+                },
+                ident: Span {
+                    start: 504,
+                    size: 7,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 547,
+                    size: 4,
+                },
+                ident: Span {
+                    start: 552,
+                    size: 5,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 653,
+                    size: 12,
+                },
+                ident: Span {
+                    start: 666,
+                    size: 6,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 708,
+                    size: 4,
+                },
+                ident: Span {
+                    start: 713,
+                    size: 5,
+                },
+            },
+        ],
+        permission: [
+            None,
+            None,
+            None,
+            None,
+        ],
+    },
+    asserts: AssertPool {
+        span: [
+            Span {
+                start: 778,
+                size: 55,
+            },
+            Span {
+                start: 850,
+                size: 51,
+            },
+        ],
+        kind: [
+            Assert,
+            AssertNot,
+        ],
+        resource: [
+            Instance {
+                ty: Span {
+                    start: 786,
+                    size: 12,
+                },
+                ident: Span {
+                    start: 799,
+                    size: 6,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 862,
+                    size: 10,
+                },
+                ident: Span {
+                    start: 873,
+                    size: 4,
+                },
+            },
+        ],
+        permission: [
+            Span {
+                start: 807,
+                size: 6,
+            },
+            Span {
+                start: 879,
+                size: 4,
+            },
+        ],
+        actor: [
+            Instance {
+                ty: Span {
+                    start: 815,
+                    size: 4,
+                },
+                ident: Span {
+                    start: 820,
+                    size: 7,
+                },
+            },
+            Instance {
+                ty: Span {
+                    start: 885,
+                    size: 4,
+                },
+                ident: Span {
+                    start: 890,
+                    size: 5,
+                },
+            },
+        ],
+    },
+}

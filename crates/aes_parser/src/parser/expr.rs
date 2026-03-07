@@ -1,0 +1,174 @@
+use aes_ast::{BinaryOp, ExprTerm};
+
+use crate::{Parser, errors, token::TokenKind};
+
+impl<'src> Parser<'src> {
+    pub(crate) fn expr(&mut self) -> aes_ast::ExprId {
+        self.expr_bp(0)
+    }
+
+    fn expr_bp(&mut self, min_bp: u8) -> aes_ast::ExprId {
+        let start = self.start_span();
+
+        let mut lhs = self.term();
+        loop {
+            let Some((op, bp)) = self.infix_op() else {
+                break;
+            };
+            if bp < min_bp {
+                break;
+            }
+
+            self.skip();
+
+            let rhs = self.expr_bp(bp + 1);
+            lhs = self
+                .ast
+                .expr(self.end_span(start), ExprTerm::Binary { op, lhs, rhs })
+        }
+
+        lhs
+    }
+
+    fn infix_op(&self) -> Option<(BinaryOp, u8)> {
+        match self.token.kind() {
+            TokenKind::Pipe => Some((BinaryOp::Union, 1)),
+            TokenKind::Amp => Some((BinaryOp::Intersection, 3)),
+            TokenKind::Minus => Some((BinaryOp::Exclusion, 5)),
+            _ => None,
+        }
+    }
+
+    fn term(&mut self) -> aes_ast::ExprId {
+        let start = self.start_span();
+
+        let term = match self.token.kind() {
+            TokenKind::Dot => {
+                self.skip();
+
+                let relation = self.ident();
+                if self.eat(TokenKind::Dot) {
+                    let permission = self.ident();
+                    ExprTerm::Traversal {
+                        relation,
+                        permission,
+                    }
+                } else {
+                    ExprTerm::SelfRef(relation)
+                }
+            }
+
+            TokenKind::Ident => {
+                let ty = self.ident();
+                if self.eat(TokenKind::ColonColon) {
+                    let member = self.ident();
+                    ExprTerm::UsersetTypeRef { ty, member }
+                } else {
+                    ExprTerm::TypeRef(ty)
+                }
+            }
+
+            TokenKind::LParen => {
+                let inner = self.parenthesized(|p| p.expr());
+                ExprTerm::Paren(inner)
+            }
+
+            _ => {
+                self.errors.push(errors::expected_term(self.token));
+                return self.ast.expr(self.token.span(), aes_ast::ExprTerm::Err);
+            }
+        };
+
+        self.ast.expr(self.end_span(start), term)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use aes_allocator::Allocator;
+    use aes_ast::*;
+
+    use crate::parser::tests::parse;
+
+    #[test]
+    fn precedence_union_intersection() {
+        let alloc = Allocator::new();
+        let r = parse(&alloc, "type t { let x = a | b & c; }");
+        r.has_no_errors();
+
+        let let_def = r.ast.lets().at(LetMemberId::new(0));
+        let root = r.ast.exprs().at(let_def.expr());
+
+        let ExprTerm::Binary { op, rhs, .. } = root.term() else {
+            panic!("expected Binary Union, got {:?}", root.term());
+        };
+        assert_eq!(op, BinaryOp::Union);
+
+        let rhs_expr = r.ast.exprs().at(rhs).term();
+        let ExprTerm::Binary { op, .. } = rhs_expr else {
+            panic!("expected Intersection, got {:?}", rhs_expr);
+        };
+
+        assert_eq!(op, BinaryOp::Intersection);
+    }
+
+    #[test]
+    fn precedence_exclusion_intersection() {
+        let alloc = Allocator::new();
+        let r = parse(&alloc, "type t { let x = a & b - c; }");
+        r.has_no_errors();
+
+        let let_def = r.ast.lets().at(LetMemberId::new(0));
+        let root = r.ast.exprs().at(let_def.expr());
+
+        let ExprTerm::Binary { op, rhs, .. } = root.term() else {
+            panic!("expected Binary Intersection, got {:?}", root.term());
+        };
+        assert_eq!(op, BinaryOp::Intersection);
+
+        let rhs_expr = r.ast.exprs().at(rhs).term();
+        let ExprTerm::Binary { op, .. } = rhs_expr else {
+            panic!("expected Exclusion, got {:?}", rhs_expr);
+        };
+
+        assert_eq!(op, BinaryOp::Exclusion);
+    }
+
+    #[test]
+    fn parenthesized_override() {
+        let alloc = Allocator::new();
+        let r = parse(&alloc, "type t { let x = (a | b) & c; }");
+        r.has_no_errors();
+
+        let let_def = r.ast.lets().at(LetMemberId::new(0));
+        let root = r.ast.exprs().at(let_def.expr());
+
+        let ExprTerm::Binary { op, lhs, .. } = root.term() else {
+            panic!("expected Intersection, got {:?}", root.term());
+        };
+        assert_eq!(op, BinaryOp::Intersection);
+
+        let lhs_expr = r.ast.exprs().at(lhs).term();
+        let ExprTerm::Paren(inner) = lhs_expr else {
+            panic!("expected Paren, got {:?}", lhs_expr);
+        };
+
+        let inner_expr = r.ast.exprs().at(inner).term();
+        let ExprTerm::Binary { op, .. } = inner_expr else {
+            panic!("expected Union inside Paren, got {:?}", inner_expr);
+        };
+
+        assert_eq!(op, BinaryOp::Union);
+    }
+
+    #[test]
+    fn paren_node_preserved() {
+        let alloc = Allocator::new();
+        let r = parse(&alloc, "type t { let x = (user); }");
+        r.has_no_errors();
+
+        let let_def = r.ast.lets().at(LetMemberId::new(0));
+        let root = r.ast.exprs().at(let_def.expr());
+        assert!(matches!(root.term(), ExprTerm::Paren(_)));
+    }
+}

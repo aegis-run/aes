@@ -1,0 +1,12 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "render_diagnostics(source, &r.errors)"
+---
+aes::parser(expected_token)
+
+  × expected identifier, found '{'
+   ╭─[test.aes:1:6]
+ 1 │ type {}
+   ·      ┬
+   ·      ╰── expected identifier
+   ╰────

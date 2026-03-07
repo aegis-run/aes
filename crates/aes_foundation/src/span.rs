@@ -46,7 +46,7 @@ impl Span {
     /// ```
     #[inline]
     pub const fn from_range(start: u32, end: u32) -> Self {
-        debug_assert!(start <= end);
+        assert!(start <= end);
         Self {
             start,
             size: end - start,

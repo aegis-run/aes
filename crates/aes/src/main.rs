@@ -1,3 +1,1 @@
-fn main() {
-    println!("aes")
-}
+fn main() {}

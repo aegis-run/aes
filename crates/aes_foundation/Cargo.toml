@@ -1,0 +1,14 @@
+[package]
+name = "aes_foundation"
+version = "0.0.1"
+authors.workspace = true
+edition.workspace = true
+include = ["/src"]
+license.workspace = true
+publish = false
+repository.workspace = true
+rust-version.workspace = true
+description.workspace = true
+
+[dependencies]
+miette.workspace = true

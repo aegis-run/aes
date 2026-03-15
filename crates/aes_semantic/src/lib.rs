@@ -1,3 +1,15 @@
+//! Semantic analysis and verification for the Aegis Schema Language.
+//!
+//! `aes_semantic` takes a raw AST from `aes_parser` and performs a **Two-Pass Analysis**
+//! to resolve references, ensure type safety, and output an optimized read-only [`Schema`].
+//!
+//! ### The Two-Pass Architecture
+//! 1. **Declaration Pass** ([`declare`]): Walks the AST to extract all types, relations, and permissions.
+//!    It assigns each unique string a fast `SymbolId` via `aes_foundation::interner` and catches basic
+//!    name collisions (e.g., duplicate types or overlapping relations/permissions).
+//! 2. **Verification Pass** ([`verify`]): Re-walks the AST using the accumulated definitions. It resolves
+//!    all `.relation` and `.permission` references and enforces language-level rules (e.g., no self-references
+//!    in `let` blocks, no traversals over computed `def` permissions).
 use aes_allocator::Allocator;
 use aes_foundation::{Diagnostic, Reporter, interner::Interner, symbols::SymbolId};
 

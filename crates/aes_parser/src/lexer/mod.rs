@@ -7,6 +7,11 @@ pub(crate) mod token;
 #[cfg(test)]
 mod tests;
 
+/// A zero-copy, byte-level scanner that yields `Token`s.
+///
+/// The `Lexer` never allocates strings or copies memory. It merely slides a `cursor`
+/// over a contiguous UTF-8 byte slice (`&[u8]`) and returns `Token`s carrying a `Span`
+/// that points back to the original source.
 pub struct Lexer<'src> {
     source: &'src [u8],
     cursor: u32,

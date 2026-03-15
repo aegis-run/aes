@@ -6,6 +6,12 @@ use crate::{
     TypeMarker, TypeSymbol,
 };
 
+/// The optimized, read-only final output of semantic analysis.
+///
+/// Unlike `SemanticIndex`, which holds references back to the `Ast` (`ExprId`s and internal `Span`s),
+/// `Schema` is completely divorced from the AST's lifetime (save for the underlying source string `&'src str`).
+/// It uses dense `SymbolMap`s for extremely fast, constant-time `O(1)` access
+/// to all types, relations, and permissions.
 #[derive(Debug, Clone)]
 pub struct Schema<'src> {
     pub(crate) types: SymbolMap<'src, TypeMarker, TypeSchema>,

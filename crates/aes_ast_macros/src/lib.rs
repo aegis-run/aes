@@ -2,6 +2,28 @@ use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 use syn::{Fields, ItemStruct, parse_macro_input};
 
+/// Generates structural boilerplate for an Arena/Structure-of-Arrays (SoA) AST node.
+///
+/// This macro expects a `struct` definition with named fields. All fields must have a type
+/// that can be represented as a slice `&[T]` in the memory pool.
+///
+/// For a given node `Name`, this macro will automatically generate:
+///
+/// * **`NameId`**: A strongly-typed `u32` identifier (`aes_foundation::Id<Name>`).
+/// * **`NameRange`**: A range of contiguous IDs (`aes_foundation::Range<Name>`).
+/// * **`NameRef`**: A reference handle providing cheap `O(1)` access to the fields via its `Id`.
+/// * **`NamePool`**: A read-only SoA pool storing all nodes of this type as contiguous slices.
+/// * **`NamePoolBuilder`**: A mutable builder used during parsing to append nodes into `Vec`s.
+///
+/// # Example
+/// ```ignore
+/// #[ast_node]
+/// pub struct LetMember {
+///     span: Span,
+///     name: Span,
+///     expr: ExprId,
+/// }
+/// ```
 #[proc_macro_attribute]
 pub fn ast_node(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as ItemStruct);
@@ -15,6 +37,8 @@ pub fn ast_node(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let name = &node_def.name;
 
     let expanded = quote! {
+        // We emit the original empty struct so it serves as the marker type for Id<T>.
+        // We don't emit the fields themselves on this struct since they live in the Pool.
         #vis struct #name;
 
         #types_tokens
@@ -25,6 +49,7 @@ pub fn ast_node(_attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+/// A parsed representation of an AST node struct for macro generation.
 struct AstNodeDef<'a> {
     vis: &'a syn::Visibility,
     name: &'a syn::Ident,

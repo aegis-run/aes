@@ -2,6 +2,22 @@ use aes_allocator::Allocator;
 use aes_foundation::Span;
 
 use crate::*;
+
+/// The root AST structure.
+///
+/// Holds pooled storage for all schema nodes (types, members, expressions, tests).
+///
+/// ## Architecture (Structure of Arrays)
+/// Aegis uses an Arena/Structure-of-Arrays (SoA) architecture for its Abstract Syntax Tree.
+/// Instead of allocating individual nodes on the heap (e.g., `Box<Expr>`), all nodes of
+/// the same type are appended to contiguous `Vec`-backed pools (e.g., `ExprPool`).
+///
+/// This approach yields significant benefits:
+/// 1. **Data Locality:** Cache-friendly sequential memory access when iterating over nodes.
+/// 2. **Memory Efficiency:** Eliminates the overhead of pointer indirection and heap allocations.
+/// 3. **Lifetime Simplification:** Node relationships are expressed via `u32` IDs (e.g., `ExprId`)
+///    rather than borrow-checker-heavy references (`&'a Expr`). This makes the tree trivial
+///    to traverse without mutable aliasing issues.
 #[derive(Debug, Clone, Copy)]
 pub struct Ast<'src> {
     types: TypeDefPool<'src>,
@@ -63,6 +79,7 @@ impl<'src> Ast<'src> {
     }
 }
 
+/// Builder for constructing an [`Ast`].
 #[derive(Debug)]
 pub struct AstBuilder<'src> {
     pub types: TypeDefPoolBuilder<'src>,
@@ -167,6 +184,9 @@ impl<'src> AstBuilder<'src> {
     }
 }
 
+/// A typed instance: `type("identifier")`.
+///
+/// Used in test assertions to identify actors and resources.
 #[derive(Debug, Clone, Copy)]
 pub struct Instance {
     ty: Span,

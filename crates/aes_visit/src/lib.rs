@@ -5,7 +5,7 @@
 //! Implement [`Visitor`] and override the methods you care about:
 //!
 //! ```
-//! # use aes_ast::visit::{Visitor, walk_type_def};
+//! # use aes_visit::{Visitor, walk_type_def};
 //! # use aes_ast::{Ast, TypeDefId};
 //! struct MyVisitor<'a> {
 //!     ast: &'a Ast<'a>,

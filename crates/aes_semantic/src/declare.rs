@@ -3,6 +3,12 @@ use aes_foundation::Reporter;
 
 use crate::{Context, errors};
 
+/// Pass 1: The Declaration Phase.
+///
+/// This visitor walks the AST and discovers all defined types, relations, and permissions.
+/// It interns their names and stores them in the `SemanticIndex` workspace.
+/// It strictly checks for duplicate declarations and namespace collisions but does *not*
+/// try to resolve expression references yet.
 pub(crate) fn declare_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast: &'src Ast<'src>) {
     aes_visit::schema(&mut Declarer {
         ctx,
@@ -147,7 +153,7 @@ mod tests {
               type user {}
               type user {}
             "#};
-            let reporter = run(&source);
+            let reporter = run(source);
 
             assert_code(&reporter, "aes::semantic(duplicate_type)");
             insta::assert_snapshot!(aes_testing::render_diagnostics(
@@ -170,7 +176,7 @@ mod tests {
                 }
             "#};
 
-            let reporter = run(&source);
+            let reporter = run(source);
             assert_code(&reporter, "aes::semantic(duplicate_type)");
             insta::assert_snapshot!(aes_testing::render_diagnostics(
                 source,
@@ -207,7 +213,7 @@ mod tests {
                   let member = dummy;
                 }
             "#};
-            let reporter = run(&source);
+            let reporter = run(source);
 
             assert_code(&reporter, "aes::semantic(duplicate_relation)");
             insta::assert_snapshot!(aes_testing::render_diagnostics(

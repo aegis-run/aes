@@ -3,6 +3,12 @@ use aes_foundation::Reporter;
 
 use crate::{Context, errors};
 
+/// Pass 2: The Verification Phase.
+///
+/// Relying on the `SemanticIndex` populated during `declare`, this visitor re-walks the AST.
+/// It verifies that all expressions (e.g. `ExprTermTypeRef`, traversals) point to valid types
+/// and relations. It enforces domain-specific rules, such as preventing self-references (`.relation`)
+/// inside of `let` statements, or ensuring traversals do not cross `def` permissions.
 pub(crate) fn verify_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast: &'src Ast<'src>) {
     aes_visit::schema(&mut Verifier {
         ast,

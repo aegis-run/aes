@@ -7,6 +7,12 @@ impl<'src> Parser<'src> {
         self.expr_bp(0)
     }
 
+    /// Implements Top-Down Operator Precedence (Pratt Parsing) for expressions.
+    ///
+    /// This resolves the ambiguity of binary operators by comparing their binding power (`bp`).
+    /// For example, Intersection (`&`, bp: 3) binds tighter than Union (`|`, bp: 1).
+    /// As long as the upcoming operator's binding power is greater than the current minimum `bp`,
+    /// it becomes the right-hand side of the tree. Let expressions start with `min_bp = 0`.
     fn expr_bp(&mut self, min_bp: u8) -> aes_ast::ExprId {
         let start = self.start_span();
 

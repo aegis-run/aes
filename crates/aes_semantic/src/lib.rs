@@ -24,6 +24,28 @@ pub struct PermissionMarker;
 pub type PermissionSymbol = SymbolId<PermissionMarker>;
 pub(crate) type PermissionInterner<'src> = Interner<'src, PermissionMarker>;
 
+pub fn analyze<'src>(
+    alloc: &'src Allocator,
+    source: &'src str,
+    ast: &'src aes_ast::Ast<'src>,
+    reporter: impl Reporter,
+) -> Option<Schema<'src>> {
+    let capacity = ast.types().len();
+    let mut ctx = Context::new(alloc, source, capacity, reporter);
+
+    declare_schema(&mut ctx, ast);
+    if ctx.reporter.has_errors() {
+        return None;
+    }
+
+    verify_schema(&mut ctx, ast);
+    if ctx.reporter.has_errors() {
+        return None;
+    }
+
+    Some(ctx.index.into_schema())
+}
+
 pub(crate) struct Context<'src, R: Reporter> {
     source: &'src str,
     index: SemanticIndex<'src>,

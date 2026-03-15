@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(self_ref_in_relation)
+
+  × self-reference not allowed in `let` body
+   ╭─[test.aes:2:16]
+ 1 │ type user {
+ 2 │   let owner = .owner;
+   ·                ──┬──
+   ·                  ╰── `.relation` syntax is not valid here
+ 3 │ }
+   ╰────
+  help: `let` defines what external types can be stored as subjects — use `def` for permissions that reference the type's own relations

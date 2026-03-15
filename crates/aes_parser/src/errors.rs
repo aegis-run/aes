@@ -118,6 +118,6 @@ pub fn from_lexer_error(token: Token) -> Diagnostic {
         TokenKind::ErrUnterminatedString => unterminated_str_literal(token.span()),
         TokenKind::ErrBadSlash => unexpected_character(token.span()),
         TokenKind::Unknown => unexpected_character(token.span()),
-        _ => unexpected_character(token.span()),
+        _ => unreachable!("called from_lexer_error on non-error token"),
     }
 }

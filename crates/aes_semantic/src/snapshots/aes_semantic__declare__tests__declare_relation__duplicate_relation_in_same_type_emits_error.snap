@@ -1,0 +1,18 @@
+---
+source: crates/aes_semantic/src/declare.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(duplicate_relation)
+
+  × duplicate relation `member`
+   ╭─[test.aes:4:7]
+ 3 │ type user {
+ 4 │   let member = dummy;
+   ·       ───┬──
+   ·          ╰── previously defined here
+ 5 │   let member = dummy;
+   ·       ───┬──
+   ·          ╰── duplicate defined here
+ 6 │ }
+   ╰────
+  help: rename one of the `member` relations or merge them into one

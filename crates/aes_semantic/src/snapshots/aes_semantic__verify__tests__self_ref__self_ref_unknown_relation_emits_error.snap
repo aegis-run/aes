@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(unknown_relation)
+
+  × unknown relation
+   ╭─[test.aes:2:15]
+ 1 │ type user {
+ 2 │   def read = .ghost;
+   ·               ──┬──
+   ·                 ╰── not defined on this type
+ 3 │ }
+   ╰────
+  help: add a `let` member with this name to the enclosing type

@@ -1,0 +1,18 @@
+---
+source: crates/aes_semantic/src/declare.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(relation_permission_name_collision)
+
+  × `read` is defined as both a relation and a permission
+   ╭─[test.aes:4:7]
+ 3 │ type user {
+ 4 │   let read = dummy;
+   ·       ──┬─
+   ·         ╰── previously defined as a relation here
+ 5 │   def read = dummy;
+   ·       ──┬─
+   ·         ╰── defined as a permission here
+ 6 │ }
+   ╰────
+  help: `let` defines stored relations, `def` defines computed permissions — they cannot share the name `read`

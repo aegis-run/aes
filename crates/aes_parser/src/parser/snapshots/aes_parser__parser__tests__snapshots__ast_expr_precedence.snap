@@ -94,56 +94,70 @@ Ast {
         ],
         term: [
             TypeRef(
-                Span {
-                    start: 17,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 17,
+                        size: 1,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 21,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 21,
+                        size: 1,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 25,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 25,
+                        size: 1,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 29,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 29,
+                        size: 1,
+                    },
                 },
             ),
-            Binary {
-                op: Exclusion,
-                lhs: Id {
-                    index: 2,
+            Binary(
+                ExprTermBinary {
+                    op: Exclusion,
+                    lhs: Id {
+                        index: 2,
+                    },
+                    rhs: Id {
+                        index: 3,
+                    },
                 },
-                rhs: Id {
-                    index: 3,
+            ),
+            Binary(
+                ExprTermBinary {
+                    op: Intersection,
+                    lhs: Id {
+                        index: 1,
+                    },
+                    rhs: Id {
+                        index: 4,
+                    },
                 },
-            },
-            Binary {
-                op: Intersection,
-                lhs: Id {
-                    index: 1,
+            ),
+            Binary(
+                ExprTermBinary {
+                    op: Union,
+                    lhs: Id {
+                        index: 0,
+                    },
+                    rhs: Id {
+                        index: 5,
+                    },
                 },
-                rhs: Id {
-                    index: 4,
-                },
-            },
-            Binary {
-                op: Union,
-                lhs: Id {
-                    index: 0,
-                },
-                rhs: Id {
-                    index: 5,
-                },
-            },
+            ),
         ],
     },
     tests: TestDefPool {

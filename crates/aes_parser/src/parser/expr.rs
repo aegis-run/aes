@@ -7,6 +7,12 @@ impl<'src> Parser<'src> {
         self.expr_bp(0)
     }
 
+    /// Implements Top-Down Operator Precedence (Pratt Parsing) for expressions.
+    ///
+    /// This resolves the ambiguity of binary operators by comparing their binding power (`bp`).
+    /// For example, Intersection (`&`, bp: 3) binds tighter than Union (`|`, bp: 1).
+    /// As long as the upcoming operator's binding power is greater than the current minimum `bp`,
+    /// it becomes the right-hand side of the tree. Let expressions start with `min_bp = 0`.
     fn expr_bp(&mut self, min_bp: u8) -> aes_ast::ExprId {
         let start = self.start_span();
 
@@ -24,7 +30,7 @@ impl<'src> Parser<'src> {
             let rhs = self.expr_bp(bp + 1);
             lhs = self
                 .ast
-                .expr(self.end_span(start), ExprTerm::Binary { op, lhs, rhs })
+                .expr(self.end_span(start), ExprTerm::binary(op, lhs, rhs))
         }
 
         lhs
@@ -49,12 +55,9 @@ impl<'src> Parser<'src> {
                 let relation = self.ident();
                 if self.eat(TokenKind::Dot) {
                     let permission = self.ident();
-                    ExprTerm::Traversal {
-                        relation,
-                        permission,
-                    }
+                    ExprTerm::traversal(relation, permission)
                 } else {
-                    ExprTerm::SelfRef(relation)
+                    ExprTerm::self_ref(relation)
                 }
             }
 
@@ -62,15 +65,15 @@ impl<'src> Parser<'src> {
                 let ty = self.ident();
                 if self.eat(TokenKind::ColonColon) {
                     let member = self.ident();
-                    ExprTerm::UsersetTypeRef { ty, member }
+                    ExprTerm::userset_type_ref(ty, member)
                 } else {
-                    ExprTerm::TypeRef(ty)
+                    ExprTerm::type_ref(ty)
                 }
             }
 
             TokenKind::LParen => {
                 let inner = self.parenthesized(|p| p.expr());
-                ExprTerm::Paren(inner)
+                ExprTerm::paren(inner)
             }
 
             _ => {
@@ -99,17 +102,17 @@ mod tests {
         let let_def = r.ast.lets().at(LetMemberId::new(0));
         let root = r.ast.exprs().at(let_def.expr());
 
-        let ExprTerm::Binary { op, rhs, .. } = root.term() else {
+        let ExprTerm::Binary(expr) = root.term() else {
             panic!("expected Binary Union, got {:?}", root.term());
         };
-        assert_eq!(op, BinaryOp::Union);
+        assert_eq!(expr.op, BinaryOp::Union);
 
-        let rhs_expr = r.ast.exprs().at(rhs).term();
-        let ExprTerm::Binary { op, .. } = rhs_expr else {
+        let rhs_expr = r.ast.exprs().at(expr.rhs).term();
+        let ExprTerm::Binary(rhs) = rhs_expr else {
             panic!("expected Intersection, got {:?}", rhs_expr);
         };
 
-        assert_eq!(op, BinaryOp::Intersection);
+        assert_eq!(rhs.op, BinaryOp::Intersection);
     }
 
     #[test]
@@ -121,17 +124,17 @@ mod tests {
         let let_def = r.ast.lets().at(LetMemberId::new(0));
         let root = r.ast.exprs().at(let_def.expr());
 
-        let ExprTerm::Binary { op, rhs, .. } = root.term() else {
+        let ExprTerm::Binary(expr) = root.term() else {
             panic!("expected Binary Intersection, got {:?}", root.term());
         };
-        assert_eq!(op, BinaryOp::Intersection);
+        assert_eq!(expr.op, BinaryOp::Intersection);
 
-        let rhs_expr = r.ast.exprs().at(rhs).term();
-        let ExprTerm::Binary { op, .. } = rhs_expr else {
+        let rhs_expr = r.ast.exprs().at(expr.rhs).term();
+        let ExprTerm::Binary(rhs) = rhs_expr else {
             panic!("expected Exclusion, got {:?}", rhs_expr);
         };
 
-        assert_eq!(op, BinaryOp::Exclusion);
+        assert_eq!(rhs.op, BinaryOp::Exclusion);
     }
 
     #[test]
@@ -143,22 +146,22 @@ mod tests {
         let let_def = r.ast.lets().at(LetMemberId::new(0));
         let root = r.ast.exprs().at(let_def.expr());
 
-        let ExprTerm::Binary { op, lhs, .. } = root.term() else {
+        let ExprTerm::Binary(expr) = root.term() else {
             panic!("expected Intersection, got {:?}", root.term());
         };
-        assert_eq!(op, BinaryOp::Intersection);
+        assert_eq!(expr.op, BinaryOp::Intersection);
 
-        let lhs_expr = r.ast.exprs().at(lhs).term();
+        let lhs_expr = r.ast.exprs().at(expr.lhs).term();
         let ExprTerm::Paren(inner) = lhs_expr else {
             panic!("expected Paren, got {:?}", lhs_expr);
         };
 
-        let inner_expr = r.ast.exprs().at(inner).term();
-        let ExprTerm::Binary { op, .. } = inner_expr else {
+        let inner_expr = r.ast.exprs().at(inner.inner).term();
+        let ExprTerm::Binary(inner_expr) = inner_expr else {
             panic!("expected Union inside Paren, got {:?}", inner_expr);
         };
 
-        assert_eq!(op, BinaryOp::Union);
+        assert_eq!(inner_expr.op, BinaryOp::Union);
     }
 
     #[test]

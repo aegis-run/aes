@@ -17,7 +17,7 @@ impl<'src> Parser<'src> {
 
             let asserts = p.asserts();
 
-            p.ast.test(p.end_span(start), name, relations, asserts);
+            p.ast.test_def(p.end_span(start), name, relations, asserts);
         });
     }
 
@@ -26,7 +26,7 @@ impl<'src> Parser<'src> {
             self.errors
                 .push(errors::missing_relations_block(self.token));
 
-            self.ast.test(
+            self.ast.test_def(
                 self.end_span(start),
                 name,
                 self.ast.relations.empty_range(),

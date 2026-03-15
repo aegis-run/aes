@@ -1,0 +1,16 @@
+---
+source: crates/aes_semantic/src/declare.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(duplicate_type)
+
+  × duplicate type `user`
+   ╭─[test.aes:1:6]
+ 1 │ type user {}
+   ·      ──┬─
+   ·        ╰── previously defined here
+ 2 │ type user {}
+   ·      ──┬─
+   ·        ╰── duplicate defined here
+   ╰────
+  help: rename one of the `user` types to make them unique

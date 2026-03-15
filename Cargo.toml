@@ -18,8 +18,11 @@ aes_ast = { version = "0.0.1", path="crates/aes_ast" }
 aes_ast_macros = { version = "0.0.1", path="crates/aes_ast_macros" }
 aes_foundation = { version = "0.0.1", path="crates/aes_foundation" }
 aes_parser = { version = "0.0.1", path="crates/aes_parser" }
+aes_semantic = { version = "0.0.1", path="crates/aes_semantic" }
 aes_testing = { version = "0.0.1", path="crates/aes_testing" }
+aes_visit = { version = "0.0.1", path="crates/aes_visit" }
 
+indoc = "2.0.7"
 insta = "1.46.3"
 miette = { version = "7.6.0", features = ["fancy"] }
 proptest = "1.10.0"

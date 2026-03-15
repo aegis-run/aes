@@ -212,79 +212,99 @@ Ast {
         ],
         term: [
             TypeRef(
-                Span {
-                    start: 87,
-                    size: 4,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 87,
+                        size: 4,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 122,
-                    size: 4,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 122,
+                        size: 4,
+                    },
                 },
             ),
             SelfRef(
-                Span {
-                    start: 158,
-                    size: 5,
+                ExprTermSelfRef {
+                    span: Span {
+                        start: 158,
+                        size: 5,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 236,
-                    size: 12,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 236,
+                        size: 12,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 279,
-                    size: 4,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 279,
+                        size: 4,
+                    },
                 },
             ),
-            UsersetTypeRef {
-                ty: Span {
-                    start: 286,
-                    size: 4,
+            UsersetTypeRef(
+                ExprTermUsersetTypeRef {
+                    ty: Span {
+                        start: 286,
+                        size: 4,
+                    },
+                    member: Span {
+                        start: 292,
+                        size: 6,
+                    },
                 },
-                member: Span {
-                    start: 292,
-                    size: 6,
+            ),
+            Binary(
+                ExprTermBinary {
+                    op: Union,
+                    lhs: Id {
+                        index: 4,
+                    },
+                    rhs: Id {
+                        index: 5,
+                    },
                 },
-            },
-            Binary {
-                op: Union,
-                lhs: Id {
-                    index: 4,
-                },
-                rhs: Id {
-                    index: 5,
-                },
-            },
+            ),
             SelfRef(
-                Span {
-                    start: 328,
-                    size: 6,
+                ExprTermSelfRef {
+                    span: Span {
+                        start: 328,
+                        size: 6,
+                    },
                 },
             ),
-            Traversal {
-                relation: Span {
-                    start: 338,
-                    size: 3,
+            Traversal(
+                ExprTermTraversal {
+                    relation: Span {
+                        start: 338,
+                        size: 3,
+                    },
+                    permission: Span {
+                        start: 342,
+                        size: 5,
+                    },
                 },
-                permission: Span {
-                    start: 342,
-                    size: 5,
+            ),
+            Binary(
+                ExprTermBinary {
+                    op: Union,
+                    lhs: Id {
+                        index: 7,
+                    },
+                    rhs: Id {
+                        index: 8,
+                    },
                 },
-            },
-            Binary {
-                op: Union,
-                lhs: Id {
-                    index: 7,
-                },
-                rhs: Id {
-                    index: 8,
-                },
-            },
+            ),
         ],
     },
     tests: TestDefPool {

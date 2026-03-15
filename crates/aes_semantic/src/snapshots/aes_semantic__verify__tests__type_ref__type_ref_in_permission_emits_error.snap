@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(type_ref_in_permission)
+
+  × type reference not allowed in `def` body
+   ╭─[test.aes:4:14]
+ 3 │ type user {
+ 4 │   def read = group;
+   ·              ──┬──
+   ·                ╰── bare type names are not valid here
+ 5 │ }
+   ╰────
+  help: `def` defines computed permissions using `.relation` or `.relation.permission` — use `let` to declare which types can be assigned to a relation

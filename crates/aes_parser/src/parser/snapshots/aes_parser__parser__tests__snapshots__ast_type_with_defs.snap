@@ -78,30 +78,36 @@ Ast {
         ],
         term: [
             SelfRef(
-                Span {
-                    start: 24,
-                    size: 6,
+                ExprTermSelfRef {
+                    span: Span {
+                        start: 24,
+                        size: 6,
+                    },
                 },
             ),
-            Traversal {
-                relation: Span {
-                    start: 34,
-                    size: 12,
+            Traversal(
+                ExprTermTraversal {
+                    relation: Span {
+                        start: 34,
+                        size: 12,
+                    },
+                    permission: Span {
+                        start: 47,
+                        size: 5,
+                    },
                 },
-                permission: Span {
-                    start: 47,
-                    size: 5,
+            ),
+            Binary(
+                ExprTermBinary {
+                    op: Union,
+                    lhs: Id {
+                        index: 0,
+                    },
+                    rhs: Id {
+                        index: 1,
+                    },
                 },
-            },
-            Binary {
-                op: Union,
-                lhs: Id {
-                    index: 0,
-                },
-                rhs: Id {
-                    index: 1,
-                },
-            },
+            ),
         ],
     },
     tests: TestDefPool {

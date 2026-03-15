@@ -85,15 +85,19 @@ Ast {
         ],
         term: [
             TypeRef(
-                Span {
-                    start: 25,
-                    size: 12,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 25,
+                        size: 12,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 52,
-                    size: 4,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 52,
+                        size: 4,
+                    },
                 },
             ),
         ],

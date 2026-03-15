@@ -13,6 +13,14 @@ mod test_def;
 mod tests;
 mod type_def;
 
+/// A Recursive Descent parser that constructs an `Ast` from a stream of `Token`s.
+///
+/// Under the hood, the parser uses an [`AstBuilder`] to push AST nodes into contiguous
+/// Arena memory pools. Because nodes are referenced via `u32` indices (`Id<T>`), the parser
+/// never deals with complex Rust lifetimes or scattered `Box` allocations.
+///
+/// It also implements robust error recovery out of the box: when parsing fails, it buffers
+/// a `Diagnostic` and synchronizes to the next known-good token (e.g. `}` or `;`) before continuing.
 pub struct Parser<'src> {
     lexer: Lexer<'src>,
     ast: AstBuilder<'src>,

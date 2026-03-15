@@ -1,15 +1,23 @@
 use aes_allocator::Allocator;
 use aes_foundation::Span;
 
-use crate::{
-    AssertId, AssertPool, AssertPoolBuilder, AssertRange, AssertionKind, DefMemberId,
-    DefMemberPool, DefMemberPoolBuilder, DefMemberRange, ExprId, ExprPool, ExprPoolBuilder,
-    ExprTerm, Instance, LetMemberId, LetMemberPool, LetMemberPoolBuilder, LetMemberRange,
-    RelationId, RelationPool, RelationPoolBuilder, RelationRange, SubjectId, SubjectPool,
-    SubjectPoolBuilder, TestDefId, TestDefPool, TestDefPoolBuilder, TypeDefId, TypeDefPool,
-    TypeDefPoolBuilder,
-};
+use crate::*;
 
+/// The root AST structure.
+///
+/// Holds pooled storage for all schema nodes (types, members, expressions, tests).
+///
+/// ## Architecture (Structure of Arrays)
+/// Aegis uses an Arena/Structure-of-Arrays (SoA) architecture for its Abstract Syntax Tree.
+/// Instead of allocating individual nodes on the heap (e.g., `Box<Expr>`), all nodes of
+/// the same type are appended to contiguous `Vec`-backed pools (e.g., `ExprPool`).
+///
+/// This approach yields significant benefits:
+/// 1. **Data Locality:** Cache-friendly sequential memory access when iterating over nodes.
+/// 2. **Memory Efficiency:** Eliminates the overhead of pointer indirection and heap allocations.
+/// 3. **Lifetime Simplification:** Node relationships are expressed via `u32` IDs (e.g., `ExprId`)
+///    rather than borrow-checker-heavy references (`&'a Expr`). This makes the tree trivial
+///    to traverse without mutable aliasing issues.
 #[derive(Debug, Clone, Copy)]
 pub struct Ast<'src> {
     types: TypeDefPool<'src>,
@@ -27,29 +35,52 @@ impl<'src> Ast<'src> {
     pub fn types(&self) -> &TypeDefPool<'src> {
         &self.types
     }
+
+    pub fn iter_types(&self) -> impl Iterator<Item = TypeDefRef<'_>> {
+        self.types.range(TypeDefRange::new(
+            TypeDefId::new(0),
+            TypeDefId::new(self.types.len() as u32),
+        ))
+    }
+
     pub fn lets(&self) -> &LetMemberPool<'src> {
         &self.lets
     }
+
     pub fn defs(&self) -> &DefMemberPool<'src> {
         &self.defs
     }
+
     pub fn exprs(&self) -> &ExprPool<'src> {
         &self.exprs
     }
+
     pub fn tests(&self) -> &TestDefPool<'src> {
         &self.tests
     }
+
+    pub fn iter_tests(&self) -> impl Iterator<Item = TestDefRef<'_>> {
+        self.tests.range(TestDefRange::new(
+            TestDefId::new(0),
+            TestDefId::new(self.tests.len() as u32),
+        ))
+    }
+
     pub fn relations(&self) -> &RelationPool<'src> {
         &self.relations
     }
+
     pub fn subjects(&self) -> &SubjectPool<'src> {
         &self.subjects
     }
+
     pub fn asserts(&self) -> &AssertPool<'src> {
         &self.asserts
     }
 }
 
+/// Builder for constructing an [`Ast`].
+#[derive(Debug)]
 pub struct AstBuilder<'src> {
     pub types: TypeDefPoolBuilder<'src>,
     pub lets: LetMemberPoolBuilder<'src>,
@@ -99,7 +130,7 @@ impl<'src> AstBuilder<'src> {
         self.exprs.push(span, term)
     }
 
-    pub fn test(
+    pub fn test_def(
         &mut self,
         span: Span,
         name: Span,
@@ -150,5 +181,30 @@ impl<'src> AstBuilder<'src> {
             subjects: self.subjects.finish(),
             asserts: self.asserts.finish(),
         }
+    }
+}
+
+/// A typed instance: `type("identifier")`.
+///
+/// Used in test assertions to identify actors and resources.
+#[derive(Debug, Clone, Copy)]
+pub struct Instance {
+    ty: Span,
+    ident: Span,
+}
+
+impl Instance {
+    pub fn new(ty: Span, ident: Span) -> Self {
+        Self { ty, ident }
+    }
+
+    #[inline]
+    pub const fn ty(&self) -> Span {
+        self.ty
+    }
+
+    #[inline]
+    pub const fn ident(&self) -> Span {
+        self.ident
     }
 }

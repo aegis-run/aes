@@ -1,15 +1,7 @@
 use aes_allocator::Allocator;
 use aes_foundation::Span;
 
-use crate::{
-    AssertId, AssertPool, AssertPoolBuilder, AssertRange, AssertionKind, DefMemberId,
-    DefMemberPool, DefMemberPoolBuilder, DefMemberRange, ExprId, ExprPool, ExprPoolBuilder,
-    ExprTerm, Instance, LetMemberId, LetMemberPool, LetMemberPoolBuilder, LetMemberRange,
-    RelationId, RelationPool, RelationPoolBuilder, RelationRange, SubjectId, SubjectPool,
-    SubjectPoolBuilder, TestDefId, TestDefPool, TestDefPoolBuilder, TypeDefId, TypeDefPool,
-    TypeDefPoolBuilder,
-};
-
+use crate::*;
 #[derive(Debug, Clone, Copy)]
 pub struct Ast<'src> {
     types: TypeDefPool<'src>,
@@ -27,29 +19,51 @@ impl<'src> Ast<'src> {
     pub fn types(&self) -> &TypeDefPool<'src> {
         &self.types
     }
+
+    pub fn iter_types(&self) -> impl Iterator<Item = TypeDefRef<'_>> {
+        self.types.range(TypeDefRange::new(
+            TypeDefId::new(0),
+            TypeDefId::new(self.types.len() as u32),
+        ))
+    }
+
     pub fn lets(&self) -> &LetMemberPool<'src> {
         &self.lets
     }
+
     pub fn defs(&self) -> &DefMemberPool<'src> {
         &self.defs
     }
+
     pub fn exprs(&self) -> &ExprPool<'src> {
         &self.exprs
     }
+
     pub fn tests(&self) -> &TestDefPool<'src> {
         &self.tests
     }
+
+    pub fn iter_tests(&self) -> impl Iterator<Item = TestDefRef<'_>> {
+        self.tests.range(TestDefRange::new(
+            TestDefId::new(0),
+            TestDefId::new(self.tests.len() as u32),
+        ))
+    }
+
     pub fn relations(&self) -> &RelationPool<'src> {
         &self.relations
     }
+
     pub fn subjects(&self) -> &SubjectPool<'src> {
         &self.subjects
     }
+
     pub fn asserts(&self) -> &AssertPool<'src> {
         &self.asserts
     }
 }
 
+#[derive(Debug)]
 pub struct AstBuilder<'src> {
     pub types: TypeDefPoolBuilder<'src>,
     pub lets: LetMemberPoolBuilder<'src>,
@@ -99,7 +113,7 @@ impl<'src> AstBuilder<'src> {
         self.exprs.push(span, term)
     }
 
-    pub fn test(
+    pub fn test_def(
         &mut self,
         span: Span,
         name: Span,
@@ -150,5 +164,27 @@ impl<'src> AstBuilder<'src> {
             subjects: self.subjects.finish(),
             asserts: self.asserts.finish(),
         }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct Instance {
+    ty: Span,
+    ident: Span,
+}
+
+impl Instance {
+    pub fn new(ty: Span, ident: Span) -> Self {
+        Self { ty, ident }
+    }
+
+    #[inline]
+    pub const fn ty(&self) -> Span {
+        self.ty
+    }
+
+    #[inline]
+    pub const fn ident(&self) -> Span {
+        self.ident
     }
 }

@@ -38,25 +38,3 @@ pub struct Subject {
     instance: Instance,
     permission: Option<Span>,
 }
-
-#[derive(Debug, Clone, Copy)]
-pub struct Instance {
-    ty: Span,
-    ident: Span,
-}
-
-impl Instance {
-    pub fn new(ty: Span, ident: Span) -> Self {
-        Self { ty, ident }
-    }
-
-    #[inline]
-    pub const fn ty(&self) -> Span {
-        self.ty
-    }
-
-    #[inline]
-    pub const fn ident(&self) -> Span {
-        self.ident
-    }
-}

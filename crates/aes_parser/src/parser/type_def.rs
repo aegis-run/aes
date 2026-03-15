@@ -162,7 +162,7 @@ mod tests {
             assert_eq!(r.text(m.name()), "x");
 
             let expr = r.ast.exprs().at(m.expr());
-            assert!(matches!(expr.term(), ExprTerm::TypeRef(s) if r.text(s) == "user"));
+            assert!(matches!(expr.term(), ExprTerm::TypeRef(s) if r.text(s.span) == "user"));
         }
 
         #[test]
@@ -174,13 +174,19 @@ mod tests {
             let let_def = r.ast.lets().at(LetMemberId::new(0));
             let expr = r.ast.exprs().at(let_def.expr());
 
-            let ExprTerm::Binary { op, lhs, rhs } = expr.term() else {
+            let ExprTerm::Binary(expr) = expr.term() else {
                 panic!("expected Binary, got {:?}", expr.term());
             };
 
-            assert_eq!(op, BinaryOp::Union);
-            assert!(matches!(r.ast.exprs().at(lhs).term(), ExprTerm::TypeRef(_)));
-            assert!(matches!(r.ast.exprs().at(rhs).term(), ExprTerm::TypeRef(_)));
+            assert_eq!(expr.op, BinaryOp::Union);
+            assert!(matches!(
+                r.ast.exprs().at(expr.lhs).term(),
+                ExprTerm::TypeRef(_)
+            ));
+            assert!(matches!(
+                r.ast.exprs().at(expr.rhs).term(),
+                ExprTerm::TypeRef(_)
+            ));
         }
 
         #[test]
@@ -191,12 +197,12 @@ mod tests {
 
             let let_def = r.ast.lets().at(LetMemberId::new(0));
             let expr = r.ast.exprs().at(let_def.expr());
-            let ExprTerm::UsersetTypeRef { ty, member } = expr.term() else {
+            let ExprTerm::UsersetTypeRef(expr) = expr.term() else {
                 panic!("expected UsersetTypeRef, got {:?}", expr.term());
             };
 
-            assert_eq!(r.text(ty), "team");
-            assert_eq!(r.text(member), "member");
+            assert_eq!(r.text(expr.ty), "team");
+            assert_eq!(r.text(expr.member), "member");
         }
     }
 
@@ -213,7 +219,7 @@ mod tests {
             assert_eq!(r.text(def.name()), "x");
 
             let expr = r.ast.exprs().at(def.expr());
-            assert!(matches!(expr.term(), ExprTerm::SelfRef(s) if r.text(s) == "reader"));
+            assert!(matches!(expr.term(), ExprTerm::SelfRef(s) if r.text(s.span) == "reader"));
         }
 
         #[test]
@@ -224,16 +230,12 @@ mod tests {
 
             let def = r.ast.defs().at(DefMemberId::new(0));
             let expr = r.ast.exprs().at(def.expr());
-            let ExprTerm::Traversal {
-                relation,
-                permission,
-            } = expr.term()
-            else {
+            let ExprTerm::Traversal(expr) = expr.term() else {
                 panic!("expected Traversal, got {:?}", expr.term());
             };
 
-            assert_eq!(r.text(relation), "organization");
-            assert_eq!(r.text(permission), "owner");
+            assert_eq!(r.text(expr.relation), "organization");
+            assert_eq!(r.text(expr.permission), "owner");
         }
 
         #[test]
@@ -246,20 +248,20 @@ mod tests {
             let def = r.ast.defs().at(DefMemberId::new(0));
             let expr = r.ast.exprs().at(def.expr());
 
-            let ExprTerm::Binary { op, lhs, rhs } = expr.term() else {
+            let ExprTerm::Binary(expr) = expr.term() else {
                 panic!("expected Binary, got {:?}", expr.term());
             };
 
-            assert_eq!(op, BinaryOp::Union);
+            assert_eq!(expr.op, BinaryOp::Union);
             // rhs is .admin
-            assert!(matches!(r.ast.exprs().at(rhs).term(), ExprTerm::SelfRef(_)));
+            assert!(matches!(
+                r.ast.exprs().at(expr.rhs).term(),
+                ExprTerm::SelfRef(_)
+            ));
             // lhs is (.writer | .maintainer)
             assert!(matches!(
-                r.ast.exprs().at(lhs).term(),
-                ExprTerm::Binary {
-                    op: BinaryOp::Union,
-                    ..
-                }
+                r.ast.exprs().at(expr.lhs).term(),
+                ExprTerm::Binary(expr) if expr.op == BinaryOp::Union,
             ));
         }
     }

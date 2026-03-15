@@ -90,46 +90,58 @@ Ast {
         ],
         term: [
             TypeRef(
-                Span {
-                    start: 18,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 18,
+                        size: 1,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 22,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 22,
+                        size: 1,
+                    },
                 },
             ),
-            Binary {
-                op: Union,
-                lhs: Id {
-                    index: 0,
+            Binary(
+                ExprTermBinary {
+                    op: Union,
+                    lhs: Id {
+                        index: 0,
+                    },
+                    rhs: Id {
+                        index: 1,
+                    },
                 },
-                rhs: Id {
-                    index: 1,
-                },
-            },
+            ),
             Paren(
-                Id {
-                    index: 2,
+                ExprTermParen {
+                    inner: Id {
+                        index: 2,
+                    },
                 },
             ),
             TypeRef(
-                Span {
-                    start: 27,
-                    size: 1,
+                ExprTermTypeRef {
+                    span: Span {
+                        start: 27,
+                        size: 1,
+                    },
                 },
             ),
-            Binary {
-                op: Intersection,
-                lhs: Id {
-                    index: 3,
+            Binary(
+                ExprTermBinary {
+                    op: Intersection,
+                    lhs: Id {
+                        index: 3,
+                    },
+                    rhs: Id {
+                        index: 4,
+                    },
                 },
-                rhs: Id {
-                    index: 4,
-                },
-            },
+            ),
         ],
     },
     tests: TestDefPool {

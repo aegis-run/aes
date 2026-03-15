@@ -7,6 +7,8 @@ pub struct Token {
     kind: TokenKind,
 }
 
+aes_foundation::const_assert!(std::mem::size_of::<Token>() == 12);
+
 impl Token {
     #[inline]
     pub const fn new(kind: TokenKind, span: Span) -> Self {
@@ -67,11 +69,6 @@ pub enum TokenKind {
 }
 
 impl TokenKind {
-    #[allow(dead_code)]
-    pub const fn is_trivia(self) -> bool {
-        matches!(self, TokenKind::Whitespace | TokenKind::LineComment)
-    }
-
     pub const fn is_error(self) -> bool {
         matches!(
             self,

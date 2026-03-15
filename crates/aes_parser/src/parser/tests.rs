@@ -14,7 +14,7 @@ pub(crate) struct ParseResult<'src> {
 
 impl<'src> ParseResult<'src> {
     pub(crate) fn text(&self, span: Span) -> &str {
-        span.text(self.source).expect("span out of bounds")
+        span.text(self.source)
     }
 
     pub(crate) fn error_messages(&self) -> Vec<&str> {

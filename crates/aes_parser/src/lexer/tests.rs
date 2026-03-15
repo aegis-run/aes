@@ -7,12 +7,7 @@ fn lex_all(source: &str) -> Vec<(TokenKind, &str)> {
     let mut lexer = Lexer::new(source.as_bytes());
     std::iter::from_fn(|| Some(lexer.next_token()))
         .take_while(|tok| tok.kind() != TokenKind::Eof)
-        .map(|tok| {
-            let kind = tok.kind();
-            let text = tok.span().text(source).expect("Source range out of bounds");
-
-            (kind, text)
-        })
+        .map(|tok| (tok.kind(), tok.span().text(source)))
         .collect()
 }
 
@@ -21,12 +16,7 @@ fn lex_nontrivial(source: &str) -> Vec<(TokenKind, &str)> {
 
     std::iter::from_fn(|| Some(lexer.next_nontrivial()))
         .take_while(|tok| tok.kind() != TokenKind::Eof)
-        .map(|tok| {
-            let kind = tok.kind();
-            let text = tok.span().text(source).expect("Source range out of bounds");
-
-            (kind, text)
-        })
+        .map(|tok| (tok.kind(), tok.span().text(source)))
         .collect()
 }
 

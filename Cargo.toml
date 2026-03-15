@@ -22,7 +22,7 @@ aes_parser = { version = "0.0.1", path="crates/aes_parser" }
 insta = "1.46.3"
 miette = { version = "7.6.0", features = ["fancy"] }
 proptest = "1.10.0"
-
+rustc-hash = "2.1.1"
 
 [profile.release]
 opt-level = 3

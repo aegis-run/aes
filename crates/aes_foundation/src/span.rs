@@ -106,17 +106,26 @@ impl Span {
 
     /// Extracts the text slice referred to by this [`Span`] from a source string.
     ///
-    /// Returns [`None`] if the span is out of bounds for the given source.
+    /// # Panics
+    ///
+    /// Panics if the span is out of bounds for the given source,
+    /// or if the span boundaries do not lie on UTF-8 character boundaries.
+    /// Out-of-bounds spans are a compiler invariant violation and
+    /// should never occur in practice.
     ///
     /// # Example
     /// ```
     /// # use aes_foundation::Span;
     /// let source = "Aegis schema language";
-    /// assert_eq!(Span::sized(6, 6).text(source), Some("schema"));
-    /// assert_eq!(Span::sized(100, 6).text(source), None);
+    /// assert_eq!(Span::sized(6, 6).text(source), "schema");
     /// ```
-    pub fn text(self, source: &str) -> Option<&str> {
-        source.get(self.start as usize..self.end() as usize)
+    pub fn text(self, source: &str) -> &str {
+        debug_assert!(
+            self.end() as usize <= source.len(),
+            "span {self:?} out of bounds for source of length {}",
+            source.len()
+        );
+        &source[self.start as usize..self.end() as usize]
     }
 
     #[must_use]
@@ -149,17 +158,18 @@ mod tests {
 
     #[test]
     fn span_empty_text_returns_empty_str() {
-        assert_eq!(Span::empty(1).text("hello"), Some(""));
+        assert_eq!(Span::empty(1).text("hello"), "");
     }
 
     #[test]
     fn span_full_text_source() {
-        assert_eq!(Span::sized(0, 5).text("hello"), Some("hello"));
+        assert_eq!(Span::sized(0, 5).text("hello"), "hello");
     }
 
     #[test]
-    fn span_partially_utf8_returns_none() {
-        assert_eq!(Span::sized(1, 1).text("héllo"), None);
+    #[should_panic(expected = "not a char boundary")]
+    fn span_partially_utf8_panics() {
+        Span::sized(1, 1).text("héllo");
     }
 
     #[test]

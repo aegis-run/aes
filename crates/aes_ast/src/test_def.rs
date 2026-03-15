@@ -1,6 +1,8 @@
 use aes_ast_macros::ast_node;
 use aes_foundation::Span;
 
+use crate::Instance;
+
 #[ast_node]
 pub struct TestDef {
     span: Span,

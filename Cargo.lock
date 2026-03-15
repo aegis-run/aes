@@ -74,6 +74,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "aes_semantic"
+version = "0.0.1"
+dependencies = [
+ "aes_allocator",
+ "aes_ast",
+ "aes_foundation",
+ "aes_parser",
+ "aes_testing",
+ "aes_visit",
+ "indoc",
+ "insta",
+ "proptest",
+ "rustc-hash",
+]
+
+[[package]]
 name = "aes_testing"
 version = "0.0.1"
 dependencies = [

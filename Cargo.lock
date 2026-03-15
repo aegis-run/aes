@@ -83,6 +83,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "aes_visit"
+version = "0.0.1"
+dependencies = [
+ "aes_allocator",
+ "aes_ast",
+ "aes_foundation",
+ "aes_testing",
+]
+
+[[package]]
 name = "anyhow"
 version = "1.0.102"
 source = "registry+https://github.com/rust-lang/crates.io-index"

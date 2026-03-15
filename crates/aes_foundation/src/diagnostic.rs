@@ -5,6 +5,11 @@ pub type Result<T> = std::result::Result<T, Diagnostic>;
 
 type CowStr = Cow<'static, str>;
 
+/// The core error-reporting structure for the Aegis compiler, wrapping [`miette`].
+///
+/// `Diagnostic` provides a fluent builder API (e.g., `with_code`, `with_label`) for constructing
+/// rich, human-readable error messages. Rather than panicking or immediately printing to stderr,
+/// diagnostics are yielded to a [`Reporter`] interface which decides how to display or buffer them.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Diagnostic {
     message: CowStr,
@@ -175,6 +180,17 @@ impl std::fmt::Display for DiagnosticCode {
             (None, None) => Ok(()),
         }
     }
+}
+
+/// An interface for collecting or immediately emitting [`Diagnostic`] events.
+///
+/// Compilers often need to switch between buffering errors (e.g., during Language Server
+/// validation to return all errors at once) and immediate printing (e.g., CLI usage).
+/// Any struct implementing `Reporter` manages this lifecycle.
+pub trait Reporter {
+    fn report(&mut self, diagnostic: Diagnostic);
+
+    fn has_errors(&self) -> bool;
 }
 
 #[cfg(test)]

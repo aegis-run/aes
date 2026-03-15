@@ -1,5 +1,14 @@
 use std::marker::PhantomData;
 
+/// A strongly-typed `u32` identifier used as an index into a centralized memory pool.
+///
+/// `Id<T>` is the backbone of Aegis's Arena/SoA architecture. Instead of allocating
+/// AST nodes on the heap (e.g., `Box<Expr>`), nodes are pushed into contiguous `Vec`s
+/// and cross-referenced via `Id<Expr>`.
+///
+/// This provides two major benefits:
+/// 1. **Zero-Allocation Tree**: The entire AST can be built iteratively in a pre-allocated chunk of memory.
+/// 2. **No Lifetimes**: Using `u32` IDs avoids Rust's borrow checker complexities and the need for pervasive `'a` lifetimes when building self-referential or cyclic graph structures.
 #[repr(transparent)]
 pub struct Id<T> {
     index: u32,
@@ -47,6 +56,11 @@ impl<T> std::hash::Hash for Id<T> {
     }
 }
 
+/// A contiguous range of [`Id`]s within an Arena pool.
+///
+/// Operations that yield multiple elements simultaneously (e.g., parsing a comma-separated list)
+/// will populate the memory pool and return a `Range<T>`. This operates functionally identically
+/// to a slice `&[T]` but holds `u32` bounds instead of a fat pointer.
 pub struct Range<T> {
     start: Id<T>,
     end: Id<T>,
@@ -106,6 +120,11 @@ impl<T> std::fmt::Debug for Range<T> {
     }
 }
 
+/// A marker used to track the current tip of an Arena pool.
+///
+/// Checkpoints are typically taken *before* beginning a nested parsing operation.
+/// Once the operation completes, the difference between the current pool tip and
+/// the checkpoint forms a [`Range`].
 pub struct Checkpoint<T>(Id<T>);
 
 impl<T> Checkpoint<T> {

@@ -1,0 +1,18 @@
+---
+source: crates/aes_semantic/src/declare.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(duplicate_permission)
+
+  × duplicate permission `read`
+   ╭─[test.aes:4:7]
+ 3 │ type user {
+ 4 │   def read = dummy;
+   ·       ──┬─
+   ·         ╰── previously defined here
+ 5 │   def read = dummy;
+   ·       ──┬─
+   ·         ╰── duplicate defined here
+ 6 │ }
+   ╰────
+  help: rename one of the `read` permissions or merge them into one

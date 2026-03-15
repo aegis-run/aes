@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(traversal_on_permission)
+
+  × cannot traverse through a computed permission
+   ╭─[test.aes:4:15]
+ 3 │   def read = .owner;
+ 4 │   def view = .read.view;
+   ·               ──┬─
+   ·                 ╰── this is a `def`, but traversals require a `let` relation
+ 5 │ }
+   ╰────
+  help: traversal syntax `.relation.permission` requires the first part to be a `let` relation — computed permissions (`def`) cannot be traversed

@@ -1,0 +1,14 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(unknown_type)
+
+  × unknown type
+   ╭─[test.aes:2:15]
+ 1 │ type user {
+ 2 │   let owner = ghost;
+   ·               ──┬──
+   ·                 ╰── this type is not defined in the schema
+ 3 │ }
+   ╰────

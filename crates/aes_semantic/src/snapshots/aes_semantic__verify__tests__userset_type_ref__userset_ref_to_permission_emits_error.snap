@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(userset_ref_to_permission)
+
+  × userset references a computed permission, not a relation
+   ╭─[test.aes:7:22]
+ 6 │ type user {
+ 7 │   let owner = group::read;
+   ·                      ──┬─
+   ·                        ╰── this is a `def` on `group`, but only `let` relations can be used in userset references
+ 8 │ }
+   ╰────
+  help: userset syntax `type::member` requires `member` to be a `let` relation, not a `def` permission

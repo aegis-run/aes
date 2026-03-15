@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(unknown_permission_on_type)
+
+  × unknown permission or relation `read` on type `org`
+    ╭─[test.aes:10:21]
+  9 │   let owner = group | org;
+ 10 │   def read = .owner.read;
+    ·                     ──┬─
+    ·                       ╰── not defined on `org`
+ 11 │ }
+    ╰────
+  help: add `read` as a `let` or `def` member to `org`

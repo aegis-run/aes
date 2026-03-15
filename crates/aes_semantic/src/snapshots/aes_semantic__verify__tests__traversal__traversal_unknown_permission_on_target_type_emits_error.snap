@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(unknown_permission_on_type)
+
+  × unknown permission or relation `ghost` on type `group`
+   ╭─[test.aes:5:21]
+ 4 │   let owner = group;
+ 5 │   def read = .owner.ghost;
+   ·                     ──┬──
+   ·                       ╰── not defined on `group`
+ 6 │ }
+   ╰────
+  help: add `ghost` as a `let` or `def` member to `group`

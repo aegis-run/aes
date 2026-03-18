@@ -37,8 +37,9 @@ jobs:
         run: nix flake update
 
       - name: Open PR if inputs changed
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v8
         with:
+          sign-commits: true
           commit-message: "chore: update flake inputs"
           title: "chore: weekly flake inputs update"
           body: "Automated weekly update of `flake.lock`."

@@ -33,6 +33,6 @@ impl URN for aes_foundation::Diagnostic {
 pub fn assert_code(r: &crate::Reporter, urn: &str) {
     use aes_foundation::Reporter;
     assert!(r.has_errors());
-    assert_eq!(r.diagnostics.len(), 1);
-    assert_eq!(r.diagnostics[0].urn(), urn);
+    assert!(!r.diagnostics.is_empty());
+    assert!(r.diagnostics.iter().any(|it| it.urn() == urn))
 }

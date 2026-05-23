@@ -24,6 +24,16 @@ pub enum BinaryOp {
     Exclusion,    // `-`
 }
 
+impl BinaryOp {
+    pub const fn as_str(&self) -> &'static str {
+        match self {
+            BinaryOp::Union => "|",
+            BinaryOp::Intersection => "&",
+            BinaryOp::Exclusion => "-",
+        }
+    }
+}
+
 /// Parenthesized expression: `(expr)`
 #[derive(Debug, Clone, Copy)]
 pub struct ExprTermParen {

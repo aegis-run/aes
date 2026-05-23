@@ -1,0 +1,13 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: schema
+---
+Schema {
+    types: [
+        TypeDefinition {
+            name: "user",
+            relations: [],
+            permissions: [],
+        },
+    ],
+}

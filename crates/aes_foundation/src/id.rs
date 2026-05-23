@@ -16,6 +16,7 @@ pub struct Id<T> {
 }
 
 impl<T> Id<T> {
+    /// Creates a new identifier from a raw index.
     #[inline]
     pub const fn new(index: u32) -> Self {
         Self {
@@ -24,6 +25,7 @@ impl<T> Id<T> {
         }
     }
 
+    /// Returns the raw index as a `usize`.
     #[inline]
     pub const fn as_index(&self) -> usize {
         self.index as usize
@@ -67,37 +69,44 @@ pub struct Range<T> {
 }
 
 impl<T> Range<T> {
+    /// Creates a new range from a start and end identifier.
     #[inline]
     pub fn new(start: Id<T>, end: Id<T>) -> Self {
         debug_assert!(start.index <= end.index);
         Self { start, end }
     }
 
+    /// Creates an empty range at the specified identifier.
     #[inline]
     pub fn empty(at: Id<T>) -> Self {
         Self::new(at, at)
     }
 
+    /// Returns the start identifier of the range.
     #[inline]
     pub const fn start(&self) -> Id<T> {
         self.start
     }
 
+    /// Returns the end identifier (exclusive) of the range.
     #[inline]
     pub const fn end(&self) -> Id<T> {
         self.end
     }
 
+    /// Returns the number of identifiers in the range.
     #[inline]
     pub const fn len(&self) -> usize {
         self.end.index as usize - self.start.index as usize
     }
 
+    /// Returns `true` if the range contains no identifiers.
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.start.index == self.end.index
     }
 
+    /// Returns an iterator over all identifiers in the range.
     #[inline]
     pub fn iter(self) -> impl Iterator<Item = Id<T>> {
         (self.start.index..self.end.index).map(Id::new)
@@ -128,11 +137,13 @@ impl<T> std::fmt::Debug for Range<T> {
 pub struct Checkpoint<T>(Id<T>);
 
 impl<T> Checkpoint<T> {
+    /// Creates a new checkpoint at the specified identifier.
     #[inline]
     pub const fn new(val: Id<T>) -> Self {
         Self(val)
     }
 
+    /// Returns the identifier at which this checkpoint was taken.
     #[inline]
     pub const fn id(&self) -> Id<T> {
         self.0

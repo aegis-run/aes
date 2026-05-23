@@ -1,0 +1,153 @@
+---
+source: crates/aes_parser/src/lexer/tests.rs
+expression: tokens
+---
+[
+    Token {
+        span: Span {
+            start: 0,
+            size: 17,
+        },
+        kind: LineComment,
+    },
+    Token {
+        span: Span {
+            start: 17,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 18,
+            size: 4,
+        },
+        kind: KwType,
+    },
+    Token {
+        span: Span {
+            start: 22,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 23,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 27,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 28,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 29,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 32,
+            size: 17,
+        },
+        kind: LineComment,
+    },
+    Token {
+        span: Span {
+            start: 49,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 52,
+            size: 3,
+        },
+        kind: KwLet,
+    },
+    Token {
+        span: Span {
+            start: 55,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 56,
+            size: 5,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 61,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 62,
+            size: 1,
+        },
+        kind: Eq,
+    },
+    Token {
+        span: Span {
+            start: 63,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 64,
+            size: 5,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 69,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 70,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 71,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 72,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+]

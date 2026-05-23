@@ -2,6 +2,7 @@ use crate::lexer::{
     Lexer,
     token::{self, ByteClass, TokenKind},
 };
+use indoc::indoc;
 
 fn lex_all(source: &str) -> Vec<(TokenKind, &str)> {
     let mut lexer = Lexer::new(source.as_bytes());
@@ -353,7 +354,11 @@ mod realistic {
 
     #[test]
     fn type_definition() {
-        let toks = lex_nontrivial("type user {}");
+        let source = indoc! {r#"
+            type user {}
+        "#};
+
+        let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
             vec![
@@ -367,7 +372,11 @@ mod realistic {
 
     #[test]
     fn member_let() {
-        let toks = lex_nontrivial("let parent = organization | team;");
+        let source = indoc! {r#"
+            let parent = organization | team;
+        "#};
+
+        let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
             vec![
@@ -384,7 +393,11 @@ mod realistic {
 
     #[test]
     fn member_def_with_self_ref() {
-        let toks = lex_nontrivial("def member = .maintainer | .direct_member;");
+        let source = indoc! {r#"
+            def member = .maintainer | .direct_member;
+        "#};
+
+        let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
             vec![
@@ -403,7 +416,11 @@ mod realistic {
 
     #[test]
     fn def_with_traversal() {
-        let toks = lex_nontrivial("def push = .writer | .organization.owner;");
+        let source = indoc! {r#"
+            def push = .writer | .organization.owner;
+        "#};
+
+        let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
             vec![
@@ -424,7 +441,11 @@ mod realistic {
 
     #[test]
     fn userset_type_ref() {
-        let toks = lex_nontrivial("let reader = user | team::member;");
+        let source = indoc! {r#"
+            let reader = user | team::member;
+        "#};
+
+        let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
             vec![
@@ -443,9 +464,12 @@ mod realistic {
 
     #[test]
     fn relation_block() {
-        let source = r#"organization("acmecorp") .{
-      .owner: user("alice");
-    };"#;
+        let source = indoc! {r#"
+            organization("acmecorp") .{
+              .owner: user("alice");
+            };
+        "#};
+
         let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
@@ -472,7 +496,10 @@ mod realistic {
 
     #[test]
     fn inline_relation() {
-        let source = r#"team("api_team") .parent: team("infrastructure");"#;
+        let source = indoc! {r#"
+            team("api_team") .parent: team("infrastructure");
+        "#};
+
         let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
@@ -495,7 +522,10 @@ mod realistic {
 
     #[test]
     fn assertion() {
-        let source = r#"assert( organization("acmecorp").manage_billing( user("alice") ) );"#;
+        let source = indoc! {r#"
+            assert( organization("acmecorp").manage_billing( user("alice") ) );
+        "#};
+
         let toks = lex_nontrivial(source);
         assert_eq!(
             kinds(&toks),
@@ -522,19 +552,45 @@ mod realistic {
 
     #[test]
     fn assert_not() {
-        let source = r#"assert_not( repository("x").push( user("eve") ) );"#;
+        let source = indoc! {r#"
+            assert_not( repository("x").push( user("eve") ) );
+        "#};
+
         let toks = lex_nontrivial(source);
-        assert_eq!(kinds(&toks)[0], TokenKind::KwAssertNot);
+        assert_eq!(
+            kinds(&toks),
+            vec![
+                TokenKind::KwAssertNot,
+                TokenKind::LParen,
+                TokenKind::Ident,
+                TokenKind::LParen,
+                TokenKind::String,
+                TokenKind::RParen,
+                TokenKind::Dot,
+                TokenKind::Ident,
+                TokenKind::LParen,
+                TokenKind::Ident,
+                TokenKind::LParen,
+                TokenKind::String,
+                TokenKind::RParen,
+                TokenKind::RParen,
+                TokenKind::RParen,
+                TokenKind::Semicolon,
+            ]
+        );
     }
 
     #[test]
     fn full_type_no_errors() {
-        let source = r#"type repository {
-    let organization = organization;
-    let reader = user | team::member;
-    def push = .writer | .organization.owner;
-    def read = .clone | .organization.owner;
-}"#;
+        let source = indoc! {r#"
+            type repository {
+              let organization = organization;
+              let reader = user | team::member;
+              def push = .writer | .organization.owner;
+              def read = .clone | .organization.owner;
+            }
+        "#};
+
         let toks = lex_nontrivial(source);
         assert!(
             toks.iter().all(|(k, _)| !k.is_error()),
@@ -719,5 +775,182 @@ mod properties {
 
             prop_assert_eq!(&reconstructed, input, "roundtrip mismatch");
         }
+    }
+}
+
+mod snapshots {
+    use super::*;
+    use indoc::indoc;
+
+    fn lex_all(source: &str) -> Vec<token::Token> {
+        let mut lexer = Lexer::new(source.as_bytes());
+        std::iter::from_fn(|| Some(lexer.next_token()))
+            .take_while(|tok| tok.kind() != TokenKind::Eof)
+            .collect()
+    }
+
+    #[test]
+    fn tokens_empty_type() {
+        let source = indoc! {r#"
+            type user {}
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_type_with_let() {
+        let source = indoc! {r#"
+            type team {
+              let parent = organization;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_type_with_def() {
+        let source = indoc! {r#"
+            type repo {
+              def push = .writer;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_userset_ref() {
+        let source = indoc! {r#"
+            type t {
+              let x = team::member;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_traversal() {
+        let source = indoc! {r#"
+            type t {
+              def x = .org.owner;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_expr_precedence() {
+        let source = indoc! {r#"
+            type t {
+              let x = a | b & c - d;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_test_block() {
+        let source = indoc! {r#"
+            test "access" {
+              relations {
+                org("acme") .owner: user("alice");
+              }
+
+              assert( org("acme").manage( user("alice") ) );
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_block_relations() {
+        let source = indoc! {r#"
+            test "t" {
+              relations {
+                org("a") .{
+                  .owner: user("x");
+                };
+              }
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_with_comment() {
+        let source = indoc! {r#"
+            // header comment
+            type user {
+              // inline comment
+              let owner = group;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_with_whitespace() {
+        let source = indoc! {r#"
+            type    user    {
+              let   x   =   user   ;
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn tokens_full_schema() {
+        let source = indoc! {r#"
+            type user {}
+
+            type organization {
+              let owner = user;
+              def manage = .owner;
+            }
+
+            type repository {
+              let org = organization;
+              let reader = user | team::member;
+
+              def push = .writer | .org.owner;
+            }
+
+            test "repo_access" {
+              relations {
+                organization("acme") .{
+                  .owner: user("alice");
+                };
+                repository("gw") .{
+                  .org: organization("acme");
+                  .reader: user("eve");
+                };
+              }
+
+              assert( organization("acme").manage( user("alice") ) );
+              assert_not( repository("gw").push( user("eve") ) );
+            }
+        "#};
+
+        let tokens = lex_all(source);
+        insta::assert_debug_snapshot!(tokens);
     }
 }

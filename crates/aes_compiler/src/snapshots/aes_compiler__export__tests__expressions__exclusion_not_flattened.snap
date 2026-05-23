@@ -1,0 +1,75 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: "schema.types[1].permissions[0].expr"
+---
+Some(
+    Expression {
+        kind: Some(
+            Difference(
+                DifferenceExpr {
+                    lhs: Some(
+                        Expression {
+                            kind: Some(
+                                Difference(
+                                    DifferenceExpr {
+                                        lhs: Some(
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "a",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ),
+                                        rhs: Some(
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "b",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    rhs: Some(
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "c",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+            ),
+        ),
+    },
+)

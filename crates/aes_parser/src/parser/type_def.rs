@@ -1,6 +1,8 @@
+use aes_foundation::Reporter;
+
 use crate::{Parser, errors, token::TokenKind};
 
-impl<'src> Parser<'src> {
+impl<'src, R: Reporter> Parser<'src, R> {
     pub(crate) fn type_def(&mut self) {
         let start = self.start_span();
 
@@ -17,7 +19,7 @@ impl<'src> Parser<'src> {
                     TokenKind::KwDef => p.def_member(),
                     TokenKind::RBrace | TokenKind::Eof => break,
                     _ => {
-                        p.errors.push(errors::unexpected_token(p.token));
+                        p.report(errors::unexpected_token(p.token));
                         p.skip_while(|k| {
                             !matches!(k, TokenKind::KwLet | TokenKind::KwDef | TokenKind::RBrace)
                         });
@@ -62,6 +64,7 @@ impl<'src> Parser<'src> {
 mod tests {
     use aes_allocator::Allocator;
     use aes_ast::*;
+    use indoc::indoc;
 
     use crate::parser::tests::parse;
 
@@ -70,82 +73,123 @@ mod tests {
 
         #[test]
         fn empty() {
-            let alloc = Allocator::new();
-            let r = parse(&alloc, "type user {}");
-            r.has_no_errors();
-            assert_eq!(r.ast.types().len(), 1);
+            let source = indoc! {r#"
+                type user {}
+            "#};
 
-            let ty = r.ast.types().at(TypeDefId::new(0));
-            assert_eq!(r.text(ty.name()), "user");
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            assert_eq!(ast.types().len(), 1);
+            let ty = ast.types().at(TypeDefId::new(0));
+
+            assert_eq!(ty.name().text(source), "user");
             assert!(ty.lets().is_empty());
             assert!(ty.defs().is_empty());
         }
 
         #[test]
         fn multiple_empty() {
-            let alloc = Allocator::new();
-            let r = parse(&alloc, "type user {} type team {} type org {}");
-            r.has_no_errors();
-            assert_eq!(r.ast.types().len(), 3);
+            let source = indoc! {r#"
+                type user {}
+                type team {}
+                type org {}
+            "#};
 
-            assert_eq!(r.text(r.ast.types().at(TypeDefId::new(0)).name()), "user");
-            assert_eq!(r.text(r.ast.types().at(TypeDefId::new(1)).name()), "team");
-            assert_eq!(r.text(r.ast.types().at(TypeDefId::new(2)).name()), "org");
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            assert_eq!(ast.types().len(), 3);
+            assert_eq!(
+                ast.iter_types()
+                    .map(|t| t.name().text(source))
+                    .collect::<Vec<_>>(),
+                vec!["user", "team", "org"]
+            );
         }
 
         #[test]
         fn with_let_members() {
-            let alloc = Allocator::new();
-            let r = parse(
-                &alloc,
-                "type team { let parent = organization; let member = user; }",
-            );
-            r.has_no_errors();
-            assert_eq!(r.ast.types().len(), 1);
+            let source = indoc! {r#"
+                type team {
+                  let parent = organization;
+                  let member = user;
+                }
+            "#};
 
-            let ty = r.ast.types().at(TypeDefId::new(0));
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            assert_eq!(ast.types().len(), 1);
+            let ty = ast.types().at(TypeDefId::new(0));
             assert_eq!(ty.lets().len(), 2);
             assert!(ty.defs().is_empty());
 
-            let lets: Vec<_> = r.ast.lets().range(ty.lets()).collect();
-            assert_eq!(r.text(lets[0].name()), "parent");
-            assert_eq!(r.text(lets[1].name()), "member");
+            let lets = ast.lets().range(ty.lets());
+            assert_eq!(
+                lets.map(|it| it.name().text(source)).collect::<Vec<_>>(),
+                vec!["parent", "member"]
+            );
         }
 
         #[test]
         fn with_def_members() {
+            let source = indoc! {r#"
+                type team {
+                  def member = .maintainer | .direct_member;
+                }
+            "#};
+
             let alloc = Allocator::new();
-            let r = parse(
-                &alloc,
-                "type team { def member = .maintainer | .direct_member; }",
-            );
-            r.has_no_errors();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
 
-            let ty = r.ast.types().at(TypeDefId::new(0));
+            let ty = ast.types().at(TypeDefId::new(0));
             assert!(ty.lets().is_empty());
-            assert_eq!(ty.defs().len(), 1);
 
-            let def = r.ast.defs().range(ty.defs()).next().unwrap();
-            assert_eq!(r.text(def.name()), "member");
+            assert_eq!(ty.defs().len(), 1);
+            let def = ast.defs().range(ty.defs()).next().unwrap();
+            assert_eq!(def.name().text(source), "member");
         }
 
         #[test]
         fn with_mixed_members() {
-            let alloc = Allocator::new();
-            let r = parse(
-                &alloc,
-                "type repository {
-                let organization = organization;
-                let reader = user | team;
-                def push = .writer | .organization.owner;
-                def read = .clone;
-            }",
-            );
-            r.has_no_errors();
+            let source = indoc! {r#"
+                type repository {
+                  let organization = organization;
+                  let reader = user | team;
 
-            let ty = r.ast.types().at(TypeDefId::new(0));
+                  def push = .writer | .organization.owner;
+                  def read = .clone;
+                }
+            "#};
+
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            let ty = ast.types().at(TypeDefId::new(0));
+
             assert_eq!(ty.lets().len(), 2);
+            assert_eq!(
+                ast.lets()
+                    .range(ty.lets())
+                    .map(|it| it.name().text(source))
+                    .collect::<Vec<_>>(),
+                vec!["organization", "reader"],
+            );
+
             assert_eq!(ty.defs().len(), 2);
+            assert_eq!(
+                ast.defs()
+                    .range(ty.defs())
+                    .map(|it| it.name().text(source))
+                    .collect::<Vec<_>>(),
+                vec!["push", "read"],
+            );
         }
     }
 
@@ -154,25 +198,37 @@ mod tests {
 
         #[test]
         fn simple_type_ref() {
+            let source = indoc! {r#"
+                type t {
+                  let x = user;
+                }
+            "#};
+
             let alloc = Allocator::new();
-            let r = parse(&alloc, "type t { let x = user; }");
-            r.has_no_errors();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
 
-            let m = r.ast.lets().at(LetMemberId::new(0));
-            assert_eq!(r.text(m.name()), "x");
+            let m = ast.lets().at(LetMemberId::new(0));
+            assert_eq!(m.name().text(source), "x");
 
-            let expr = r.ast.exprs().at(m.expr());
-            assert!(matches!(expr.term(), ExprTerm::TypeRef(s) if r.text(s.span) == "user"));
+            let expr = ast.exprs().at(m.expr());
+            assert!(matches!(expr.term(), ExprTerm::TypeRef(s) if s.span.text(source) == "user"));
         }
 
         #[test]
         fn union_expr() {
-            let alloc = Allocator::new();
-            let r = parse(&alloc, "type t { let x = user | team; }");
-            r.has_no_errors();
+            let source = indoc! {r#"
+                type t {
+                  let x = user | team;
+                }
+            "#};
 
-            let let_def = r.ast.lets().at(LetMemberId::new(0));
-            let expr = r.ast.exprs().at(let_def.expr());
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            let let_def = ast.lets().at(LetMemberId::new(0));
+            let expr = ast.exprs().at(let_def.expr());
 
             let ExprTerm::Binary(expr) = expr.term() else {
                 panic!("expected Binary, got {:?}", expr.term());
@@ -180,29 +236,35 @@ mod tests {
 
             assert_eq!(expr.op, BinaryOp::Union);
             assert!(matches!(
-                r.ast.exprs().at(expr.lhs).term(),
+                ast.exprs().at(expr.lhs).term(),
                 ExprTerm::TypeRef(_)
             ));
             assert!(matches!(
-                r.ast.exprs().at(expr.rhs).term(),
+                ast.exprs().at(expr.rhs).term(),
                 ExprTerm::TypeRef(_)
             ));
         }
 
         #[test]
         fn userset_type_ref() {
-            let alloc = Allocator::new();
-            let r = parse(&alloc, "type t { let x = team::member; }");
-            r.has_no_errors();
+            let source = indoc! {r#"
+                type t {
+                  let x = team::member;
+                }
+            "#};
 
-            let let_def = r.ast.lets().at(LetMemberId::new(0));
-            let expr = r.ast.exprs().at(let_def.expr());
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            let let_def = ast.lets().at(LetMemberId::new(0));
+            let expr = ast.exprs().at(let_def.expr());
             let ExprTerm::UsersetTypeRef(expr) = expr.term() else {
                 panic!("expected UsersetTypeRef, got {:?}", expr.term());
             };
 
-            assert_eq!(r.text(expr.ty), "team");
-            assert_eq!(r.text(expr.member), "member");
+            assert_eq!(expr.ty.text(source), "team");
+            assert_eq!(expr.member.text(source), "member");
         }
     }
 
@@ -211,42 +273,60 @@ mod tests {
 
         #[test]
         fn self_ref() {
+            let source = indoc! {r#"
+                type t {
+                  def x = .reader;
+                }
+            "#};
+
             let alloc = Allocator::new();
-            let r = parse(&alloc, "type t { def x = .reader; }");
-            r.has_no_errors();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
 
-            let def = r.ast.defs().at(DefMemberId::new(0));
-            assert_eq!(r.text(def.name()), "x");
+            let def = ast.defs().at(DefMemberId::new(0));
+            assert_eq!(def.name().text(source), "x");
 
-            let expr = r.ast.exprs().at(def.expr());
-            assert!(matches!(expr.term(), ExprTerm::SelfRef(s) if r.text(s.span) == "reader"));
+            let expr = ast.exprs().at(def.expr());
+            assert!(matches!(expr.term(), ExprTerm::SelfRef(s) if s.span.text(source) == "reader"));
         }
 
         #[test]
         fn traversal() {
-            let alloc = Allocator::new();
-            let r = parse(&alloc, "type t { def x = .organization.owner; }");
-            r.has_no_errors();
+            let source = indoc! {r#"
+                type t {
+                  def x = .organization.owner;
+                }
+            "#};
 
-            let def = r.ast.defs().at(DefMemberId::new(0));
-            let expr = r.ast.exprs().at(def.expr());
+            let alloc = Allocator::new();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
+
+            let def = ast.defs().at(DefMemberId::new(0));
+            let expr = ast.exprs().at(def.expr());
             let ExprTerm::Traversal(expr) = expr.term() else {
                 panic!("expected Traversal, got {:?}", expr.term());
             };
 
-            assert_eq!(r.text(expr.relation), "organization");
-            assert_eq!(r.text(expr.permission), "owner");
+            assert_eq!(expr.relation.text(source), "organization");
+            assert_eq!(expr.permission.text(source), "owner");
         }
 
         #[test]
         fn chained_union() {
+            let source = indoc! {r#"
+                type t {
+                  def x = .writer | .maintainer | .admin;
+                }
+            "#};
+
             let alloc = Allocator::new();
-            let r = parse(&alloc, "type t { def x = .writer | .maintainer | .admin; }");
-            r.has_no_errors();
+            let (ast, reporter) = parse(&alloc, source);
+            assert!(reporter.is_clean());
 
             // Union is left-associative, so: ((.writer | .maintainer) | .admin)
-            let def = r.ast.defs().at(DefMemberId::new(0));
-            let expr = r.ast.exprs().at(def.expr());
+            let def = ast.defs().at(DefMemberId::new(0));
+            let expr = ast.exprs().at(def.expr());
 
             let ExprTerm::Binary(expr) = expr.term() else {
                 panic!("expected Binary, got {:?}", expr.term());
@@ -255,12 +335,12 @@ mod tests {
             assert_eq!(expr.op, BinaryOp::Union);
             // rhs is .admin
             assert!(matches!(
-                r.ast.exprs().at(expr.rhs).term(),
+                ast.exprs().at(expr.rhs).term(),
                 ExprTerm::SelfRef(_)
             ));
             // lhs is (.writer | .maintainer)
             assert!(matches!(
-                r.ast.exprs().at(expr.lhs).term(),
+                ast.exprs().at(expr.lhs).term(),
                 ExprTerm::Binary(expr) if expr.op == BinaryOp::Union,
             ));
         }

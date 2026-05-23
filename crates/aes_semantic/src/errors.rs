@@ -123,3 +123,13 @@ pub fn traversal_on_permission(span: Span) -> Diagnostic {
              a `let` relation — computed permissions (`def`) cannot be traversed",
         )
 }
+
+pub fn binary_op_in_relation(span: Span, op: &str) -> Diagnostic {
+    Diagnostic::error("only union (`|`) is allowed in `let` relations")
+        .with_code("aes::semantic", "binary_op_in_relation")
+        .with_label(span.label(format!("`{op}` is not allowed here")))
+        .with_help(
+            "`let` defines stored relations as a union of subject types — \
+             use `def` for computed permissions with `&` or `-`",
+        )
+}

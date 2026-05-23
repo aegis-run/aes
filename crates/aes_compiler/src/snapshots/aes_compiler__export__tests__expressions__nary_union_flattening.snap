@@ -1,0 +1,61 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: "schema.types[1].permissions[0].expr"
+---
+Some(
+    Expression {
+        kind: Some(
+            Union(
+                UnionExpr {
+                    terms: [
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "a",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "b",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "c",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ],
+                },
+            ),
+        ),
+    },
+)

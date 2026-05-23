@@ -9,7 +9,7 @@ use crate::{Context, errors};
 /// It interns their names and stores them in the `SemanticIndex` workspace.
 /// It strictly checks for duplicate declarations and namespace collisions but does *not*
 /// try to resolve expression references yet.
-pub(crate) fn declare_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast: &'src Ast<'src>) {
+pub(crate) fn declare_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast: &Ast<'src>) {
     aes_visit::schema(&mut Declarer {
         ctx,
         ast,
@@ -17,22 +17,22 @@ pub(crate) fn declare_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast:
     });
 }
 
-struct Declarer<'c, 'src, R: Reporter> {
-    ast: &'src Ast<'src>,
+struct Declarer<'ast, 'c, 'src, R: Reporter> {
+    ast: &'ast Ast<'src>,
     ctx: &'c mut Context<'src, R>,
 
     scope: Option<aes_ast::TypeDefId>,
 }
 
-impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Declarer<'c, 'src, R> {
-    fn ast(&self) -> &'src Ast<'src> {
+impl<'ast, 'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Declarer<'ast, 'c, 'src, R> {
+    fn ast(&self) -> &Ast<'src> {
         self.ast
     }
 
     fn type_def(&mut self, id: aes_ast::TypeDefId) {
         let scope = self.ast().types().at(id);
         let span = scope.name();
-        let name = scope.name().text(self.ctx.source);
+        let name = scope.name().text(self.ctx.file.source());
 
         if let Some(prev) = self.ctx.index.declare_type(id, span, name) {
             return self.ctx.report(errors::duplicate_type(span, prev, name));
@@ -48,7 +48,7 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Declarer<'c, 'src, R> {
         let rel = self.ast().lets().at(id);
 
         let span = rel.name();
-        let name = span.text(self.ctx.source);
+        let name = span.text(self.ctx.file.source());
 
         if let Some(prev) = self
             .ctx
@@ -71,7 +71,7 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Declarer<'c, 'src, R> {
         let perm = self.ast().defs().at(id);
 
         let span = perm.name();
-        let name = span.text(self.ctx.source);
+        let name = span.text(self.ctx.file.source());
 
         if let Some(prev) = self
             .ctx
@@ -89,7 +89,7 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Declarer<'c, 'src, R> {
     }
 }
 
-impl<'c, 'src, R: Reporter> Declarer<'c, 'src, R> {
+impl<'ast, 'c, 'src, R: Reporter> Declarer<'ast, 'c, 'src, R> {
     #[allow(clippy::unreachable)]
     fn scope(&self) -> aes_ast::TypeDefId {
         debug_assert!(
@@ -115,13 +115,15 @@ mod tests {
 
     fn run(source: &str) -> aes_testing::Reporter {
         let alloc = Allocator::new();
-        let (ast, errs) = aes_parser::Parser::new(&alloc, source).parse();
-        assert!(errs.is_empty());
+        let file = aes_testing::file_ref(&alloc, source);
+        let mut reporter = aes_testing::Reporter::default();
+        let ast = aes_parser::Parser::new(file, &mut reporter).parse();
+        assert!(reporter.is_clean());
 
-        let mut ctx = Context::new(&alloc, source, 8, aes_testing::Reporter::default());
+        let mut ctx = Context::new(file, 8, &mut reporter);
         declare_schema(&mut ctx, &ast);
 
-        ctx.reporter
+        reporter
     }
 
     mod declare_type {

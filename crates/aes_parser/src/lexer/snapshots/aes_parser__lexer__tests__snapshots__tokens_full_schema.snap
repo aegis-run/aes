@@ -1,0 +1,1343 @@
+---
+source: crates/aes_parser/src/lexer/tests.rs
+expression: tokens
+---
+[
+    Token {
+        span: Span {
+            start: 0,
+            size: 4,
+        },
+        kind: KwType,
+    },
+    Token {
+        span: Span {
+            start: 4,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 5,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 9,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 10,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 11,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 12,
+            size: 2,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 14,
+            size: 4,
+        },
+        kind: KwType,
+    },
+    Token {
+        span: Span {
+            start: 18,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 19,
+            size: 12,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 31,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 32,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 33,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 36,
+            size: 3,
+        },
+        kind: KwLet,
+    },
+    Token {
+        span: Span {
+            start: 39,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 40,
+            size: 5,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 45,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 46,
+            size: 1,
+        },
+        kind: Eq,
+    },
+    Token {
+        span: Span {
+            start: 47,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 48,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 52,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 53,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 56,
+            size: 3,
+        },
+        kind: KwDef,
+    },
+    Token {
+        span: Span {
+            start: 59,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 60,
+            size: 6,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 66,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 67,
+            size: 1,
+        },
+        kind: Eq,
+    },
+    Token {
+        span: Span {
+            start: 68,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 69,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 70,
+            size: 5,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 75,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 76,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 77,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 78,
+            size: 2,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 80,
+            size: 4,
+        },
+        kind: KwType,
+    },
+    Token {
+        span: Span {
+            start: 84,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 85,
+            size: 10,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 95,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 96,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 97,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 100,
+            size: 3,
+        },
+        kind: KwLet,
+    },
+    Token {
+        span: Span {
+            start: 103,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 104,
+            size: 3,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 107,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 108,
+            size: 1,
+        },
+        kind: Eq,
+    },
+    Token {
+        span: Span {
+            start: 109,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 110,
+            size: 12,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 122,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 123,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 126,
+            size: 3,
+        },
+        kind: KwLet,
+    },
+    Token {
+        span: Span {
+            start: 129,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 130,
+            size: 6,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 136,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 137,
+            size: 1,
+        },
+        kind: Eq,
+    },
+    Token {
+        span: Span {
+            start: 138,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 139,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 143,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 144,
+            size: 1,
+        },
+        kind: Pipe,
+    },
+    Token {
+        span: Span {
+            start: 145,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 146,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 150,
+            size: 2,
+        },
+        kind: ColonColon,
+    },
+    Token {
+        span: Span {
+            start: 152,
+            size: 6,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 158,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 159,
+            size: 4,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 163,
+            size: 3,
+        },
+        kind: KwDef,
+    },
+    Token {
+        span: Span {
+            start: 166,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 167,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 171,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 172,
+            size: 1,
+        },
+        kind: Eq,
+    },
+    Token {
+        span: Span {
+            start: 173,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 174,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 175,
+            size: 6,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 181,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 182,
+            size: 1,
+        },
+        kind: Pipe,
+    },
+    Token {
+        span: Span {
+            start: 183,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 184,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 185,
+            size: 3,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 188,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 189,
+            size: 5,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 194,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 195,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 196,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 197,
+            size: 2,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 199,
+            size: 4,
+        },
+        kind: KwTest,
+    },
+    Token {
+        span: Span {
+            start: 203,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 204,
+            size: 13,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 217,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 218,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 219,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 222,
+            size: 9,
+        },
+        kind: KwRelations,
+    },
+    Token {
+        span: Span {
+            start: 231,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 232,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 233,
+            size: 5,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 238,
+            size: 12,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 250,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 251,
+            size: 6,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 257,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 258,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 259,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 260,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 261,
+            size: 7,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 268,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 269,
+            size: 5,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 274,
+            size: 1,
+        },
+        kind: Colon,
+    },
+    Token {
+        span: Span {
+            start: 275,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 276,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 280,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 281,
+            size: 7,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 288,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 289,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 290,
+            size: 5,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 295,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 296,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 297,
+            size: 5,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 302,
+            size: 10,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 312,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 313,
+            size: 4,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 317,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 318,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 319,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 320,
+            size: 1,
+        },
+        kind: LBrace,
+    },
+    Token {
+        span: Span {
+            start: 321,
+            size: 7,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 328,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 329,
+            size: 3,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 332,
+            size: 1,
+        },
+        kind: Colon,
+    },
+    Token {
+        span: Span {
+            start: 333,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 334,
+            size: 12,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 346,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 347,
+            size: 6,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 353,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 354,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 355,
+            size: 7,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 362,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 363,
+            size: 6,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 369,
+            size: 1,
+        },
+        kind: Colon,
+    },
+    Token {
+        span: Span {
+            start: 370,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 371,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 375,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 376,
+            size: 5,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 381,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 382,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 383,
+            size: 5,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 388,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 389,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 390,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 393,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 394,
+            size: 4,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 398,
+            size: 6,
+        },
+        kind: KwAssert,
+    },
+    Token {
+        span: Span {
+            start: 404,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 405,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 406,
+            size: 12,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 418,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 419,
+            size: 6,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 425,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 426,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 427,
+            size: 6,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 433,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 434,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 435,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 439,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 440,
+            size: 7,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 447,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 448,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 449,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 450,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 451,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 452,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 453,
+            size: 3,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 456,
+            size: 10,
+        },
+        kind: KwAssertNot,
+    },
+    Token {
+        span: Span {
+            start: 466,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 467,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 468,
+            size: 10,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 478,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 479,
+            size: 4,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 483,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 484,
+            size: 1,
+        },
+        kind: Dot,
+    },
+    Token {
+        span: Span {
+            start: 485,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 489,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 490,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 491,
+            size: 4,
+        },
+        kind: Ident,
+    },
+    Token {
+        span: Span {
+            start: 495,
+            size: 1,
+        },
+        kind: LParen,
+    },
+    Token {
+        span: Span {
+            start: 496,
+            size: 5,
+        },
+        kind: String,
+    },
+    Token {
+        span: Span {
+            start: 501,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 502,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 503,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 504,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 505,
+            size: 1,
+        },
+        kind: RParen,
+    },
+    Token {
+        span: Span {
+            start: 506,
+            size: 1,
+        },
+        kind: Semicolon,
+    },
+    Token {
+        span: Span {
+            start: 507,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+    Token {
+        span: Span {
+            start: 508,
+            size: 1,
+        },
+        kind: RBrace,
+    },
+    Token {
+        span: Span {
+            start: 509,
+            size: 1,
+        },
+        kind: Whitespace,
+    },
+]

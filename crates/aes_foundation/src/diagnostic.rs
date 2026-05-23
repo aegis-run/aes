@@ -193,6 +193,16 @@ pub trait Reporter {
     fn has_errors(&self) -> bool;
 }
 
+impl<T: Reporter + ?Sized> Reporter for &mut T {
+    fn report(&mut self, diagnostic: Diagnostic) {
+        (**self).report(diagnostic);
+    }
+
+    fn has_errors(&self) -> bool {
+        (**self).has_errors()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;

@@ -1,0 +1,22 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: "schema.types[2].permissions[0].expr"
+---
+Some(
+    Expression {
+        kind: Some(
+            Term(
+                TermExpr {
+                    term: Some(
+                        Traversal(
+                            Traversal {
+                                relation: "parent",
+                                permission: "read",
+                            },
+                        ),
+                    ),
+                },
+            ),
+        ),
+    },
+)

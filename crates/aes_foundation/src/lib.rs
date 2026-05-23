@@ -14,6 +14,7 @@ pub mod interner;
 pub mod prelude;
 mod span;
 pub mod symbols;
+pub mod vfs;
 
 pub use diagnostic::*;
 pub use id::*;

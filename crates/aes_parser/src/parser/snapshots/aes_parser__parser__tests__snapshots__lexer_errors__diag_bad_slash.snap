@@ -1,0 +1,14 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::lexer(unexpected_character)
+
+  × unexpected character
+   ╭─[test.aes:2:11]
+ 1 │ type t {
+ 2 │   let x = / user;
+   ·           ┬
+   ·           ╰── not valid here
+ 3 │ }
+   ╰────

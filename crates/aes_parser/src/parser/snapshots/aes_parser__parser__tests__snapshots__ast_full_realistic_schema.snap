@@ -1,34 +1,34 @@
 ---
 source: crates/aes_parser/src/parser/tests.rs
-expression: r.ast
+expression: ast
 ---
 Ast {
     types: TypeDefPool {
         span: [
             Span {
-                start: 13,
+                start: 0,
                 size: 12,
             },
             Span {
-                start: 39,
-                size: 139,
+                start: 14,
+                size: 86,
             },
             Span {
-                start: 192,
-                size: 170,
+                start: 102,
+                size: 117,
             },
         ],
         name: [
             Span {
-                start: 18,
+                start: 5,
                 size: 4,
             },
             Span {
-                start: 44,
+                start: 19,
                 size: 12,
             },
             Span {
-                start: 197,
+                start: 107,
                 size: 10,
             },
         ],
@@ -88,37 +88,37 @@ Ast {
     lets: LetMemberPool {
         span: [
             Span {
-                start: 75,
+                start: 36,
                 size: 17,
             },
             Span {
-                start: 109,
+                start: 56,
                 size: 18,
             },
             Span {
-                start: 226,
+                start: 122,
                 size: 23,
             },
             Span {
-                start: 266,
+                start: 148,
                 size: 33,
             },
         ],
         name: [
             Span {
-                start: 79,
+                start: 40,
                 size: 5,
             },
             Span {
-                start: 113,
+                start: 60,
                 size: 6,
             },
             Span {
-                start: 230,
+                start: 126,
                 size: 3,
             },
             Span {
-                start: 270,
+                start: 152,
                 size: 6,
             },
         ],
@@ -140,21 +140,21 @@ Ast {
     defs: DefMemberPool {
         span: [
             Span {
-                start: 144,
+                start: 78,
                 size: 20,
             },
             Span {
-                start: 316,
+                start: 185,
                 size: 32,
             },
         ],
         name: [
             Span {
-                start: 148,
+                start: 82,
                 size: 6,
             },
             Span {
-                start: 320,
+                start: 189,
                 size: 4,
             },
         ],
@@ -170,43 +170,43 @@ Ast {
     exprs: ExprPool {
         span: [
             Span {
-                start: 87,
+                start: 48,
                 size: 4,
             },
             Span {
-                start: 122,
+                start: 69,
                 size: 4,
             },
             Span {
-                start: 157,
+                start: 91,
                 size: 6,
             },
             Span {
-                start: 236,
+                start: 132,
                 size: 12,
             },
             Span {
-                start: 279,
+                start: 161,
                 size: 4,
             },
             Span {
-                start: 286,
+                start: 168,
                 size: 12,
             },
             Span {
-                start: 279,
+                start: 161,
                 size: 19,
             },
             Span {
-                start: 327,
+                start: 196,
                 size: 7,
             },
             Span {
-                start: 337,
+                start: 206,
                 size: 10,
             },
             Span {
-                start: 327,
+                start: 196,
                 size: 20,
             },
         ],
@@ -214,7 +214,7 @@ Ast {
             TypeRef(
                 ExprTermTypeRef {
                     span: Span {
-                        start: 87,
+                        start: 48,
                         size: 4,
                     },
                 },
@@ -222,7 +222,7 @@ Ast {
             TypeRef(
                 ExprTermTypeRef {
                     span: Span {
-                        start: 122,
+                        start: 69,
                         size: 4,
                     },
                 },
@@ -230,7 +230,7 @@ Ast {
             SelfRef(
                 ExprTermSelfRef {
                     span: Span {
-                        start: 158,
+                        start: 92,
                         size: 5,
                     },
                 },
@@ -238,7 +238,7 @@ Ast {
             TypeRef(
                 ExprTermTypeRef {
                     span: Span {
-                        start: 236,
+                        start: 132,
                         size: 12,
                     },
                 },
@@ -246,7 +246,7 @@ Ast {
             TypeRef(
                 ExprTermTypeRef {
                     span: Span {
-                        start: 279,
+                        start: 161,
                         size: 4,
                     },
                 },
@@ -254,11 +254,11 @@ Ast {
             UsersetTypeRef(
                 ExprTermUsersetTypeRef {
                     ty: Span {
-                        start: 286,
+                        start: 168,
                         size: 4,
                     },
                     member: Span {
-                        start: 292,
+                        start: 174,
                         size: 6,
                     },
                 },
@@ -277,7 +277,7 @@ Ast {
             SelfRef(
                 ExprTermSelfRef {
                     span: Span {
-                        start: 328,
+                        start: 197,
                         size: 6,
                     },
                 },
@@ -285,11 +285,11 @@ Ast {
             Traversal(
                 ExprTermTraversal {
                     relation: Span {
-                        start: 338,
+                        start: 207,
                         size: 3,
                     },
                     permission: Span {
-                        start: 342,
+                        start: 211,
                         size: 5,
                     },
                 },
@@ -310,13 +310,13 @@ Ast {
     tests: TestDefPool {
         span: [
             Span {
-                start: 376,
-                size: 525,
+                start: 221,
+                size: 334,
             },
         ],
         name: [
             Span {
-                start: 381,
+                start: 226,
                 size: 11,
             },
         ],
@@ -344,79 +344,79 @@ Ast {
     relations: RelationPool {
         span: [
             Span {
-                start: 492,
+                start: 289,
                 size: 21,
             },
             Span {
-                start: 539,
+                start: 318,
                 size: 20,
             },
             Span {
-                start: 648,
+                start: 377,
                 size: 26,
             },
             Span {
-                start: 700,
+                start: 411,
                 size: 20,
             },
         ],
         resource: [
             Instance {
                 ty: Span {
-                    start: 443,
+                    start: 258,
                     size: 12,
                 },
                 ident: Span {
-                    start: 456,
+                    start: 271,
                     size: 6,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 443,
+                    start: 258,
                     size: 12,
                 },
                 ident: Span {
-                    start: 456,
+                    start: 271,
                     size: 6,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 603,
+                    start: 350,
                     size: 10,
                 },
                 ident: Span {
-                    start: 614,
+                    start: 361,
                     size: 4,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 603,
+                    start: 350,
                     size: 10,
                 },
                 ident: Span {
-                    start: 614,
+                    start: 361,
                     size: 4,
                 },
             },
         ],
         relation: [
             Span {
-                start: 492,
+                start: 289,
                 size: 5,
             },
             Span {
-                start: 539,
+                start: 318,
                 size: 6,
             },
             Span {
-                start: 648,
+                start: 377,
                 size: 3,
             },
             Span {
-                start: 700,
+                start: 411,
                 size: 6,
             },
         ],
@@ -438,60 +438,60 @@ Ast {
     subjects: SubjectPool {
         span: [
             Span {
-                start: 499,
+                start: 296,
                 size: 13,
             },
             Span {
-                start: 547,
+                start: 326,
                 size: 11,
             },
             Span {
-                start: 653,
+                start: 382,
                 size: 20,
             },
             Span {
-                start: 708,
+                start: 419,
                 size: 11,
             },
         ],
         instance: [
             Instance {
                 ty: Span {
-                    start: 499,
+                    start: 296,
                     size: 4,
                 },
                 ident: Span {
-                    start: 504,
+                    start: 301,
                     size: 7,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 547,
+                    start: 326,
                     size: 4,
                 },
                 ident: Span {
-                    start: 552,
+                    start: 331,
                     size: 5,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 653,
+                    start: 382,
                     size: 12,
                 },
                 ident: Span {
-                    start: 666,
+                    start: 395,
                     size: 6,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 708,
+                    start: 419,
                     size: 4,
                 },
                 ident: Span {
-                    start: 713,
+                    start: 424,
                     size: 5,
                 },
             },
@@ -506,11 +506,11 @@ Ast {
     asserts: AssertPool {
         span: [
             Span {
-                start: 778,
+                start: 446,
                 size: 55,
             },
             Span {
-                start: 850,
+                start: 504,
                 size: 51,
             },
         ],
@@ -521,53 +521,53 @@ Ast {
         resource: [
             Instance {
                 ty: Span {
-                    start: 786,
+                    start: 454,
                     size: 12,
                 },
                 ident: Span {
-                    start: 799,
+                    start: 467,
                     size: 6,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 862,
+                    start: 516,
                     size: 10,
                 },
                 ident: Span {
-                    start: 873,
+                    start: 527,
                     size: 4,
                 },
             },
         ],
         permission: [
             Span {
-                start: 807,
+                start: 475,
                 size: 6,
             },
             Span {
-                start: 879,
+                start: 533,
                 size: 4,
             },
         ],
         actor: [
             Instance {
                 ty: Span {
-                    start: 815,
+                    start: 483,
                     size: 4,
                 },
                 ident: Span {
-                    start: 820,
+                    start: 488,
                     size: 7,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 885,
+                    start: 539,
                     size: 4,
                 },
                 ident: Span {
-                    start: 890,
+                    start: 544,
                     size: 5,
                 },
             },

@@ -1,6 +1,6 @@
 ---
 source: crates/aes_parser/src/parser/tests.rs
-expression: r.ast
+expression: ast
 ---
 Ast {
     types: TypeDefPool {
@@ -27,7 +27,7 @@ Ast {
         span: [
             Span {
                 start: 0,
-                size: 302,
+                size: 215,
             },
         ],
         name: [
@@ -60,43 +60,43 @@ Ast {
     relations: RelationPool {
         span: [
             Span {
-                start: 77,
+                start: 47,
                 size: 21,
             },
             Span {
-                start: 131,
+                start: 85,
                 size: 28,
             },
         ],
         resource: [
             Instance {
                 ty: Span {
-                    start: 64,
+                    start: 34,
                     size: 3,
                 },
                 ident: Span {
-                    start: 68,
+                    start: 38,
                     size: 6,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 119,
+                    start: 73,
                     size: 4,
                 },
                 ident: Span {
-                    start: 124,
+                    start: 78,
                     size: 4,
                 },
             },
         ],
         relation: [
             Span {
-                start: 77,
+                start: 47,
                 size: 5,
             },
             Span {
-                start: 131,
+                start: 85,
                 size: 6,
             },
         ],
@@ -112,32 +112,32 @@ Ast {
     subjects: SubjectPool {
         span: [
             Span {
-                start: 84,
+                start: 54,
                 size: 13,
             },
             Span {
-                start: 139,
+                start: 93,
                 size: 19,
             },
         ],
         instance: [
             Instance {
                 ty: Span {
-                    start: 84,
+                    start: 54,
                     size: 4,
                 },
                 ident: Span {
-                    start: 89,
+                    start: 59,
                     size: 7,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 139,
+                    start: 93,
                     size: 4,
                 },
                 ident: Span {
-                    start: 144,
+                    start: 98,
                     size: 5,
                 },
             },
@@ -146,7 +146,7 @@ Ast {
             None,
             Some(
                 Span {
-                    start: 152,
+                    start: 106,
                     size: 6,
                 },
             ),
@@ -155,11 +155,11 @@ Ast {
     asserts: AssertPool {
         span: [
             Span {
-                start: 194,
+                start: 121,
                 size: 46,
             },
             Span {
-                start: 257,
+                start: 170,
                 size: 45,
             },
         ],
@@ -170,53 +170,53 @@ Ast {
         resource: [
             Instance {
                 ty: Span {
-                    start: 202,
+                    start: 129,
                     size: 3,
                 },
                 ident: Span {
-                    start: 206,
+                    start: 133,
                     size: 6,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 269,
+                    start: 182,
                     size: 4,
                 },
                 ident: Span {
-                    start: 274,
+                    start: 187,
                     size: 4,
                 },
             },
         ],
         permission: [
             Span {
-                start: 214,
+                start: 141,
                 size: 6,
             },
             Span {
-                start: 280,
+                start: 193,
                 size: 4,
             },
         ],
         actor: [
             Instance {
                 ty: Span {
-                    start: 222,
+                    start: 149,
                     size: 4,
                 },
                 ident: Span {
-                    start: 227,
+                    start: 154,
                     size: 7,
                 },
             },
             Instance {
                 ty: Span {
-                    start: 286,
+                    start: 199,
                     size: 4,
                 },
                 ident: Span {
-                    start: 291,
+                    start: 204,
                     size: 5,
                 },
             },

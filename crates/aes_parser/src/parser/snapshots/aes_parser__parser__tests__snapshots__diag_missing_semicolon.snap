@@ -1,12 +1,14 @@
 ---
 source: crates/aes_parser/src/parser/tests.rs
-expression: "render_diagnostics(source, &r.errors)"
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
 ---
 aes::parser(missing_semicolon)
 
   × missing semicolon
-   ╭─[test.aes:1:18]
- 1 │ type t { let x = user }
-   ·                  ──┬─
-   ·                    ╰── expected ';' after this
+   ╭─[test.aes:2:11]
+ 1 │ type t {
+ 2 │   let x = user
+   ·           ──┬─
+   ·             ╰── expected ';' after this
+ 3 │ }
    ╰────

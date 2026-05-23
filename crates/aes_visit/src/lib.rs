@@ -12,7 +12,7 @@
 //! }
 //!
 //! impl<'a> Visitor<'a> for MyVisitor<'a> {
-//!     fn ast(&self) -> &'a Ast<'a> { self.ast }
+//!     fn ast(&self) -> &Ast<'a> { self.ast }
 //!
 //!     fn type_def(&mut self, id: TypeDefId) {
 //!         // Custom logic before walking children
@@ -45,17 +45,19 @@ pub use test_def::*;
 pub use type_def::*;
 
 pub fn schema<'src>(visit: &mut impl Visitor<'src>) {
-    for type_ref in visit.ast().iter_types() {
-        visit.type_def(type_ref.id());
+    let type_count = visit.ast().types().len();
+    for index in 0..type_count {
+        visit.type_def(TypeDefId::new(index as u32));
     }
 
-    for test_ref in visit.ast().iter_tests() {
-        visit.test_def(test_ref.id());
+    let test_count = visit.ast().tests().len();
+    for index in 0..test_count {
+        visit.test_def(TestDefId::new(index as u32));
     }
 }
 
 pub trait Visitor<'src>: Sized {
-    fn ast(&self) -> &'src Ast<'src>;
+    fn ast(&self) -> &Ast<'src>;
 
     fn type_def(&mut self, id: TypeDefId) {
         type_def::walk_type_def(self, id);
@@ -73,24 +75,24 @@ pub trait Visitor<'src>: Sized {
         expr::walk_expr(self, id);
     }
 
-    fn expr_paren(&mut self, expr: ExprTermParen) {
+    fn expr_paren(&mut self, _id: ExprId, expr: ExprTermParen) {
         expr::walk_expr(self, expr.inner);
     }
 
     #[allow(unused_variables)]
-    fn expr_self_ref(&mut self, expr: ExprTermSelfRef) {}
+    fn expr_self_ref(&mut self, id: ExprId, expr: ExprTermSelfRef) {}
 
     #[allow(unused_variables)]
-    fn expr_traversal(&mut self, expr: ExprTermTraversal) {}
+    fn expr_traversal(&mut self, id: ExprId, expr: ExprTermTraversal) {}
 
     #[allow(unused_variables)]
-    fn expr_type_ref(&mut self, expr: ExprTermTypeRef) {}
+    fn expr_type_ref(&mut self, id: ExprId, expr: ExprTermTypeRef) {}
 
     #[allow(unused_variables)]
-    fn expr_userset_type_ref(&mut self, expr: ExprTermUsersetTypeRef) {}
+    fn expr_userset_type_ref(&mut self, id: ExprId, expr: ExprTermUsersetTypeRef) {}
 
     #[allow(unused_variables)]
-    fn expr_binary(&mut self, expr: ExprTermBinary) {}
+    fn expr_binary(&mut self, id: ExprId, expr: ExprTermBinary) {}
 
     fn test_def(&mut self, id: TestDefId) {
         test_def::walk_test_def(self, id);

@@ -13,19 +13,22 @@ edition = "2024"
 rust-version = "1.93"
 
 [workspace.dependencies]
-aes_allocator = { version = "0.0.1", path="crates/aes_allocator" }
-aes_ast = { version = "0.0.1", path="crates/aes_ast" }
-aes_ast_macros = { version = "0.0.1", path="crates/aes_ast_macros" }
-aes_foundation = { version = "0.0.1", path="crates/aes_foundation" }
-aes_parser = { version = "0.0.1", path="crates/aes_parser" }
-aes_semantic = { version = "0.0.1", path="crates/aes_semantic" }
-aes_testing = { version = "0.0.1", path="crates/aes_testing" }
-aes_visit = { version = "0.0.1", path="crates/aes_visit" }
+aes_allocator = { version = "0.0.1", path = "crates/aes_allocator" }
+aes_ast = { version = "0.0.1", path = "crates/aes_ast" }
+aes_ast_macros = { version = "0.0.1", path = "crates/aes_ast_macros" }
+aes_compiler = { version = "0.0.1", path = "crates/aes_compiler" }
+aes_foundation = { version = "0.0.1", path = "crates/aes_foundation" }
+aes_ir = { version = "0.0.1", path = "crates/aes_ir" }
+aes_parser = { version = "0.0.1", path = "crates/aes_parser" }
+aes_semantic = { version = "0.0.1", path = "crates/aes_semantic" }
+aes_testing = { version = "0.0.1", path = "crates/aes_testing" }
+aes_visit = { version = "0.0.1", path = "crates/aes_visit" }
 
 indoc = "2.0.7"
 insta = "1.46.3"
 miette = { version = "7.6.0", features = ["fancy"] }
 proptest = "1.10.0"
+prost = "0.14.3"
 rustc-hash = "2.1.1"
 
 [profile.release]

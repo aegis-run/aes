@@ -1,6 +1,5 @@
-use aes_allocator::Allocator;
 use aes_ast::{Ast, AstBuilder};
-use aes_foundation::{Diagnostic, Span};
+use aes_foundation::{Diagnostic, Reporter, Span, vfs::FileRef};
 
 use crate::{
     Lexer, errors,
@@ -21,48 +20,52 @@ mod type_def;
 ///
 /// It also implements robust error recovery out of the box: when parsing fails, it buffers
 /// a `Diagnostic` and synchronizes to the next known-good token (e.g. `}` or `;`) before continuing.
-pub struct Parser<'src> {
+pub struct Parser<'src, R: Reporter> {
     lexer: Lexer<'src>,
     ast: AstBuilder<'src>,
 
     prev: Span,
     token: Token,
 
-    errors: Vec<Diagnostic>,
+    reporter: R,
 }
 
-impl<'src> Parser<'src> {
-    pub fn new(alloc: &'src Allocator, source: &'src str) -> Self {
-        let mut lexer = Lexer::new(source.as_bytes());
+impl<'src, R: Reporter> Parser<'src, R> {
+    pub fn new(file: FileRef<'src>, reporter: R) -> Self {
+        let mut lexer = Lexer::new(file.source().as_bytes());
 
         let token = lexer.next_nontrivial();
 
         Self {
             lexer,
-            ast: AstBuilder::new(alloc),
+            ast: AstBuilder::new(file.alloc()),
             prev: Span::empty(token.span().start()),
             token,
-            errors: Vec::new(),
+            reporter,
         }
     }
 
-    pub fn parse(mut self) -> (Ast<'src>, Vec<Diagnostic>) {
+    pub fn parse(mut self) -> Ast<'src> {
         while !self.at(TokenKind::Eof) {
             match self.token.kind() {
                 TokenKind::KwType => self.type_def(),
                 TokenKind::KwTest => self.test_def(),
                 _ => {
-                    self.errors.push(errors::unexpected_token(self.token));
+                    self.report(errors::unexpected_token(self.token));
                     self.skip_while(|k| !matches!(k, TokenKind::KwType | TokenKind::KwTest));
                 }
             }
         }
 
-        (self.ast.finish(), self.errors)
+        self.ast.finish()
+    }
+
+    pub(crate) fn report(&mut self, diagnostic: Diagnostic) {
+        self.reporter.report(diagnostic);
     }
 }
 
-impl<'src> Parser<'src> {
+impl<'src, R: Reporter> Parser<'src, R> {
     fn start_span(&self) -> u32 {
         self.token.span().start()
     }
@@ -87,7 +90,7 @@ impl<'src> Parser<'src> {
             return self.advance().span();
         }
 
-        self.errors.push(errors::expected(kind, self.token));
+        self.report(errors::expected(kind, self.token));
         Span::empty(self.token.span().start())
     }
 
@@ -124,8 +127,7 @@ impl<'src> Parser<'src> {
         let result = f(self);
 
         if !self.at(TokenKind::RBrace) {
-            self.errors
-                .push(errors::unclosed_delimiter(open, "'{'", self.token));
+            self.report(errors::unclosed_delimiter(open, "'{'", self.token));
         } else {
             self.skip();
         }
@@ -138,8 +140,7 @@ impl<'src> Parser<'src> {
         let result = f(self);
 
         if !self.at(TokenKind::RParen) {
-            self.errors
-                .push(errors::unclosed_delimiter(open, "'('", self.token));
+            self.report(errors::unclosed_delimiter(open, "'('", self.token));
         } else {
             self.skip();
         }
@@ -151,7 +152,7 @@ impl<'src> Parser<'src> {
         if self.at(TokenKind::Semicolon) {
             self.skip();
         } else {
-            self.errors.push(errors::missing_semicolon(self.prev));
+            self.report(errors::missing_semicolon(self.prev));
         }
     }
 
@@ -159,7 +160,7 @@ impl<'src> Parser<'src> {
         loop {
             let token = self.lexer.next_nontrivial();
             if token.kind().is_error() {
-                self.errors.push(errors::from_lexer_error(token));
+                self.report(errors::from_lexer_error(token));
             } else {
                 return token;
             }

@@ -1,0 +1,15 @@
+---
+source: crates/aes_semantic/src/verify.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::semantic(binary_op_in_relation)
+
+  × only union (`|`) is allowed in `let` relations
+   ╭─[test.aes:4:16]
+ 3 │ type user {
+ 4 │   let member = user - bot;
+   ·                ─────┬────
+   ·                     ╰── `-` is not allowed here
+ 5 │ }
+   ╰────
+  help: `let` defines stored relations as a union of subject types — use `def` for computed permissions with `&` or `-`

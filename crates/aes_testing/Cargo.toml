@@ -14,3 +14,4 @@ description.workspace = true
 aes_allocator.workspace = true
 aes_ast.workspace = true
 aes_foundation.workspace = true
+proptest.workspace = true

@@ -1,0 +1,1065 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: schema
+---
+Schema {
+    types: [
+        TypeDefinition {
+            name: "user",
+            relations: [],
+            permissions: [],
+        },
+        TypeDefinition {
+            name: "team",
+            relations: [
+                Relation {
+                    name: "parent",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "organization",
+                                ),
+                            ),
+                        },
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "team",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "maintainer",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "direct_member",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+            ],
+            permissions: [
+                Permission {
+                    name: "member",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "direct_member",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "change_team_name",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "parent",
+                                                                        permission: "change_team_name",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+            ],
+        },
+        TypeDefinition {
+            name: "organization",
+            relations: [
+                Relation {
+                    name: "owner",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "member",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "billing_manager",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "team_maintainer",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+            ],
+            permissions: [
+                Permission {
+                    name: "create_repository",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "member",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "manage_billing",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "billing_manager",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "user_seat",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "member",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "team_maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "change_team_name",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "team_maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+            ],
+        },
+        TypeDefinition {
+            name: "repository",
+            relations: [
+                Relation {
+                    name: "organization",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "organization",
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "reader",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                        ActorType {
+                            actor: Some(
+                                Userset(
+                                    UsersetType {
+                                        r#type: "team",
+                                        member: "direct_member",
+                                    },
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "triager",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                        ActorType {
+                            actor: Some(
+                                Userset(
+                                    UsersetType {
+                                        r#type: "team",
+                                        member: "direct_member",
+                                    },
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "writer",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                        ActorType {
+                            actor: Some(
+                                Userset(
+                                    UsersetType {
+                                        r#type: "team",
+                                        member: "direct_member",
+                                    },
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "maintainer",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                        ActorType {
+                            actor: Some(
+                                Userset(
+                                    UsersetType {
+                                        r#type: "team",
+                                        member: "direct_member",
+                                    },
+                                ),
+                            ),
+                        },
+                    ],
+                },
+                Relation {
+                    name: "admin",
+                    actors: [
+                        ActorType {
+                            actor: Some(
+                                Direct(
+                                    "user",
+                                ),
+                            ),
+                        },
+                        ActorType {
+                            actor: Some(
+                                Userset(
+                                    UsersetType {
+                                        r#type: "team",
+                                        member: "direct_member",
+                                    },
+                                ),
+                            ),
+                        },
+                    ],
+                },
+            ],
+            permissions: [
+                Permission {
+                    name: "push",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "writer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "admin",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "clone",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "reader",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "triager",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "push",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "read",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "clone",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "delete",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "admin",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "create_issue",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "read",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "close_issue",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "triager",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "writer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "admin",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "create_pull_request",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "read",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "merge_pull_request",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "close_pull_request",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "close_issue",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "manage_setting",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "maintainer",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "admin",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+                Permission {
+                    name: "manage_sensitive_setting",
+                    expr: Some(
+                        Expression {
+                            kind: Some(
+                                Union(
+                                    UnionExpr {
+                                        terms: [
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                SelfRef(
+                                                                    SelfRef {
+                                                                        relation: "admin",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                            Expression {
+                                                kind: Some(
+                                                    Term(
+                                                        TermExpr {
+                                                            term: Some(
+                                                                Traversal(
+                                                                    Traversal {
+                                                                        relation: "organization",
+                                                                        permission: "owner",
+                                                                    },
+                                                                ),
+                                                            ),
+                                                        },
+                                                    ),
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+            ],
+        },
+    ],
+}

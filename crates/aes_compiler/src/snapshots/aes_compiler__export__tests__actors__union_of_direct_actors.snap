@@ -1,0 +1,20 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: "schema.types[2].relations[0].actors"
+---
+[
+    ActorType {
+        actor: Some(
+            Direct(
+                "user",
+            ),
+        ),
+    },
+    ActorType {
+        actor: Some(
+            Direct(
+                "group",
+            ),
+        ),
+    },
+]

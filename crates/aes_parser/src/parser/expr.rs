@@ -1,8 +1,9 @@
 use aes_ast::{BinaryOp, ExprTerm};
+use aes_foundation::Reporter;
 
 use crate::{Parser, errors, token::TokenKind};
 
-impl<'src> Parser<'src> {
+impl<'src, R: Reporter> Parser<'src, R> {
     pub(crate) fn expr(&mut self) -> aes_ast::ExprId {
         self.expr_bp(0)
     }
@@ -77,7 +78,7 @@ impl<'src> Parser<'src> {
             }
 
             _ => {
-                self.errors.push(errors::expected_term(self.token));
+                self.report(errors::expected_term(self.token));
                 return self.ast.expr(self.token.span(), aes_ast::ExprTerm::Err);
             }
         };
@@ -90,24 +91,31 @@ impl<'src> Parser<'src> {
 mod tests {
     use aes_allocator::Allocator;
     use aes_ast::*;
+    use indoc::indoc;
 
     use crate::parser::tests::parse;
 
     #[test]
     fn precedence_union_intersection() {
-        let alloc = Allocator::new();
-        let r = parse(&alloc, "type t { let x = a | b & c; }");
-        r.has_no_errors();
+        let source = indoc! {r#"
+            type t {
+              let x = a | b & c;
+            }
+        "#};
 
-        let let_def = r.ast.lets().at(LetMemberId::new(0));
-        let root = r.ast.exprs().at(let_def.expr());
+        let alloc = Allocator::new();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        let let_def = ast.lets().at(LetMemberId::new(0));
+        let root = ast.exprs().at(let_def.expr());
 
         let ExprTerm::Binary(expr) = root.term() else {
             panic!("expected Binary Union, got {:?}", root.term());
         };
         assert_eq!(expr.op, BinaryOp::Union);
 
-        let rhs_expr = r.ast.exprs().at(expr.rhs).term();
+        let rhs_expr = ast.exprs().at(expr.rhs).term();
         let ExprTerm::Binary(rhs) = rhs_expr else {
             panic!("expected Intersection, got {:?}", rhs_expr);
         };
@@ -117,19 +125,25 @@ mod tests {
 
     #[test]
     fn precedence_exclusion_intersection() {
-        let alloc = Allocator::new();
-        let r = parse(&alloc, "type t { let x = a & b - c; }");
-        r.has_no_errors();
+        let source = indoc! {r#"
+            type t {
+              let x = a & b - c;
+            }
+        "#};
 
-        let let_def = r.ast.lets().at(LetMemberId::new(0));
-        let root = r.ast.exprs().at(let_def.expr());
+        let alloc = Allocator::new();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        let let_def = ast.lets().at(LetMemberId::new(0));
+        let root = ast.exprs().at(let_def.expr());
 
         let ExprTerm::Binary(expr) = root.term() else {
             panic!("expected Binary Intersection, got {:?}", root.term());
         };
         assert_eq!(expr.op, BinaryOp::Intersection);
 
-        let rhs_expr = r.ast.exprs().at(expr.rhs).term();
+        let rhs_expr = ast.exprs().at(expr.rhs).term();
         let ExprTerm::Binary(rhs) = rhs_expr else {
             panic!("expected Exclusion, got {:?}", rhs_expr);
         };
@@ -139,24 +153,30 @@ mod tests {
 
     #[test]
     fn parenthesized_override() {
-        let alloc = Allocator::new();
-        let r = parse(&alloc, "type t { let x = (a | b) & c; }");
-        r.has_no_errors();
+        let source = indoc! {r#"
+            type t {
+              let x = (a | b) & c;
+            }
+        "#};
 
-        let let_def = r.ast.lets().at(LetMemberId::new(0));
-        let root = r.ast.exprs().at(let_def.expr());
+        let alloc = Allocator::new();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        let let_def = ast.lets().at(LetMemberId::new(0));
+        let root = ast.exprs().at(let_def.expr());
 
         let ExprTerm::Binary(expr) = root.term() else {
             panic!("expected Intersection, got {:?}", root.term());
         };
         assert_eq!(expr.op, BinaryOp::Intersection);
 
-        let lhs_expr = r.ast.exprs().at(expr.lhs).term();
+        let lhs_expr = ast.exprs().at(expr.lhs).term();
         let ExprTerm::Paren(inner) = lhs_expr else {
             panic!("expected Paren, got {:?}", lhs_expr);
         };
 
-        let inner_expr = r.ast.exprs().at(inner.inner).term();
+        let inner_expr = ast.exprs().at(inner.inner).term();
         let ExprTerm::Binary(inner_expr) = inner_expr else {
             panic!("expected Union inside Paren, got {:?}", inner_expr);
         };
@@ -166,12 +186,18 @@ mod tests {
 
     #[test]
     fn paren_node_preserved() {
-        let alloc = Allocator::new();
-        let r = parse(&alloc, "type t { let x = (user); }");
-        r.has_no_errors();
+        let source = indoc! {r#"
+            type t {
+              let x = (user);
+            }
+        "#};
 
-        let let_def = r.ast.lets().at(LetMemberId::new(0));
-        let root = r.ast.exprs().at(let_def.expr());
+        let alloc = Allocator::new();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        let let_def = ast.lets().at(LetMemberId::new(0));
+        let root = ast.exprs().at(let_def.expr());
         assert!(matches!(root.term(), ExprTerm::Paren(_)));
     }
 }

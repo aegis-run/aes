@@ -1,0 +1,48 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: "schema.types[1].permissions[0].expr"
+---
+Some(
+    Expression {
+        kind: Some(
+            Difference(
+                DifferenceExpr {
+                    lhs: Some(
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "all",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                    rhs: Some(
+                        Expression {
+                            kind: Some(
+                                Term(
+                                    TermExpr {
+                                        term: Some(
+                                            SelfRef(
+                                                SelfRef {
+                                                    relation: "banned",
+                                                },
+                                            ),
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                },
+            ),
+        ),
+    },
+)

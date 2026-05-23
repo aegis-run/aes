@@ -10,16 +10,17 @@
 //! 2. **Verification Pass** ([`verify`]): Re-walks the AST using the accumulated definitions. It resolves
 //!    all `.relation` and `.permission` references and enforces language-level rules (e.g., no self-references
 //!    in `let` blocks, no traversals over computed `def` permissions).
-use aes_allocator::Allocator;
-use aes_foundation::{Diagnostic, Reporter, interner::Interner, symbols::SymbolId};
+use aes_foundation::{Diagnostic, Reporter, interner::Interner, symbols::SymbolId, vfs::FileRef};
 
-use crate::{declare::declare_schema, index::SemanticIndex, schema::Schema, verify::verify_schema};
+use crate::{declare::declare_schema, index::SemanticIndex, verify::verify_schema};
 
 mod declare;
 mod errors;
 mod index;
 mod schema;
 mod verify;
+
+pub use schema::*;
 
 #[derive(Debug, Clone, Copy)]
 pub struct TypeMarker;
@@ -37,13 +38,12 @@ pub type PermissionSymbol = SymbolId<PermissionMarker>;
 pub(crate) type PermissionInterner<'src> = Interner<'src, PermissionMarker>;
 
 pub fn analyze<'src>(
-    alloc: &'src Allocator,
-    source: &'src str,
-    ast: &'src aes_ast::Ast<'src>,
+    file: FileRef<'src>,
+    ast: &aes_ast::Ast<'src>,
     reporter: impl Reporter,
 ) -> Option<Schema<'src>> {
     let capacity = ast.types().len();
-    let mut ctx = Context::new(alloc, source, capacity, reporter);
+    let mut ctx = Context::new(file, capacity, reporter);
 
     declare_schema(&mut ctx, ast);
     if ctx.reporter.has_errors() {
@@ -59,16 +59,16 @@ pub fn analyze<'src>(
 }
 
 pub(crate) struct Context<'src, R: Reporter> {
-    source: &'src str,
+    file: FileRef<'src>,
     index: SemanticIndex<'src>,
     reporter: R,
 }
 
 impl<'src, R: Reporter> Context<'src, R> {
-    pub fn new(alloc: &'src Allocator, source: &'src str, capacity: usize, reporter: R) -> Self {
+    pub fn new(file: FileRef<'src>, capacity: usize, reporter: R) -> Self {
         Self {
-            source,
-            index: SemanticIndex::with_capacity(alloc, capacity),
+            file,
+            index: SemanticIndex::with_capacity(file.alloc(), capacity),
             reporter,
         }
     }

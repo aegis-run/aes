@@ -9,7 +9,7 @@ use crate::{Context, errors};
 /// It verifies that all expressions (e.g. `ExprTermTypeRef`, traversals) point to valid types
 /// and relations. It enforces domain-specific rules, such as preventing self-references (`.relation`)
 /// inside of `let` statements, or ensuring traversals do not cross `def` permissions.
-pub(crate) fn verify_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast: &'src Ast<'src>) {
+pub(crate) fn verify_schema<'src, R: Reporter>(ctx: &mut Context<'src, R>, ast: &Ast<'src>) {
     aes_visit::schema(&mut Verifier {
         ast,
         ctx,
@@ -25,8 +25,8 @@ enum ResolutionContext {
     Permission,
 }
 
-struct Verifier<'c, 'src, R: Reporter> {
-    ast: &'src Ast<'src>,
+struct Verifier<'ast, 'c, 'src, R: Reporter> {
+    ast: &'ast Ast<'src>,
     ctx: &'c mut Context<'src, R>,
     scratch: Vec<aes_ast::TypeDefId>,
 
@@ -34,8 +34,8 @@ struct Verifier<'c, 'src, R: Reporter> {
     res_ctx: ResolutionContext,
 }
 
-impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Verifier<'c, 'src, R> {
-    fn ast(&self) -> &'src Ast<'src> {
+impl<'ast, 'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Verifier<'ast, 'c, 'src, R> {
+    fn ast(&self) -> &Ast<'src> {
         self.ast
     }
 
@@ -55,29 +55,29 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Verifier<'c, 'src, R> {
         aes_visit::walk_def_member(self, id);
     }
 
-    fn expr_type_ref(&mut self, expr: aes_ast::ExprTermTypeRef) {
+    fn expr_type_ref(&mut self, _: aes_ast::ExprId, expr: aes_ast::ExprTermTypeRef) {
         let span = expr.span;
         if !self.in_relation() {
             return self.ctx.report(errors::type_ref_in_permission(span));
         }
 
-        let name = span.text(self.ctx.source);
+        let name = span.text(self.ctx.file.source());
         if self.ctx.index.type_(name).is_none() {
             self.ctx.report(errors::unknown_type(span))
         }
     }
 
-    fn expr_userset_type_ref(&mut self, expr: aes_ast::ExprTermUsersetTypeRef) {
+    fn expr_userset_type_ref(&mut self, _: aes_ast::ExprId, expr: aes_ast::ExprTermUsersetTypeRef) {
         if !self.in_relation() {
             return self.ctx.report(errors::type_ref_in_permission(expr.ty));
         }
 
-        let ty_name = expr.ty.text(self.ctx.source);
+        let ty_name = expr.ty.text(self.ctx.file.source());
         let Some(tid) = self.ctx.index.type_(ty_name) else {
             return self.ctx.report(errors::unknown_type(expr.ty));
         };
 
-        let member_name = expr.member.text(self.ctx.source);
+        let member_name = expr.member.text(self.ctx.file.source());
         if self.ctx.index.has_relation(tid, member_name) {
             return;
         }
@@ -92,24 +92,39 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Verifier<'c, 'src, R> {
             .report(errors::unknown_member(expr.member, ty_name));
     }
 
-    fn expr_self_ref(&mut self, expr: aes_ast::ExprTermSelfRef) {
+    fn expr_self_ref(&mut self, _: aes_ast::ExprId, expr: aes_ast::ExprTermSelfRef) {
         if !self.in_permission() {
             return self.ctx.report(errors::self_ref_in_relation(expr.span));
         }
 
-        let name = expr.span.text(self.ctx.source);
+        let name = expr.span.text(self.ctx.file.source());
 
         if !self.ctx.index.has_member(self.scope(), name) {
             self.ctx.report(errors::unknown_relation(expr.span))
         }
     }
 
-    fn expr_traversal(&mut self, expr: aes_ast::ExprTermTraversal) {
+    fn expr_binary(&mut self, id: aes_ast::ExprId, expr: aes_ast::ExprTermBinary) {
+        if !self.in_relation() {
+            return;
+        }
+
+        match expr.op {
+            aes_ast::BinaryOp::Union => {}
+            op => {
+                let span = self.ast.exprs().at(id).span();
+                self.ctx
+                    .report(errors::binary_op_in_relation(span, op.as_str()))
+            }
+        }
+    }
+
+    fn expr_traversal(&mut self, _: aes_ast::ExprId, expr: aes_ast::ExprTermTraversal) {
         if !self.in_permission() {
             return self.ctx.report(errors::self_ref_in_relation(expr.relation));
         }
 
-        let relation_name = expr.relation.text(self.ctx.source);
+        let relation_name = expr.relation.text(self.ctx.file.source());
 
         let Some((_, let_expr)) = self.ctx.index.relation(self.scope(), relation_name) else {
             let diagnostic = if self.ctx.index.has_permission(self.scope(), relation_name) {
@@ -121,7 +136,7 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Verifier<'c, 'src, R> {
             return self.ctx.report(diagnostic);
         };
 
-        let permission_name = expr.permission.text(self.ctx.source);
+        let permission_name = expr.permission.text(self.ctx.file.source());
 
         self.scratch.clear();
         self.collect_type_refs(let_expr);
@@ -138,7 +153,7 @@ impl<'c, 'src, R: Reporter> aes_visit::Visitor<'src> for Verifier<'c, 'src, R> {
     }
 }
 
-impl<'c, 'src, R: Reporter> Verifier<'c, 'src, R> {
+impl<'ast, 'c, 'src, R: Reporter> Verifier<'ast, 'c, 'src, R> {
     #[allow(clippy::unreachable)]
     fn scope(&self) -> aes_ast::TypeDefId {
         debug_assert!(
@@ -164,13 +179,13 @@ impl<'c, 'src, R: Reporter> Verifier<'c, 'src, R> {
     fn collect_type_refs(&mut self, expr_id: aes_ast::ExprId) {
         match self.ast.exprs().at(expr_id).term() {
             ExprTerm::TypeRef(expr) => {
-                let name = expr.span.text(self.ctx.source);
+                let name = expr.span.text(self.ctx.file.source());
                 if let Some(tid) = self.ctx.index.type_(name) {
                     self.scratch.push(tid);
                 }
             }
             ExprTerm::UsersetTypeRef(expr) => {
-                let name = expr.ty.text(self.ctx.source);
+                let name = expr.ty.text(self.ctx.file.source());
                 if let Some(tid) = self.ctx.index.type_(name) {
                     self.scratch.push(tid);
                 }
@@ -197,16 +212,18 @@ mod tests {
 
     fn run(source: &str) -> aes_testing::Reporter {
         let alloc = Allocator::new();
-        let (ast, errs) = aes_parser::Parser::new(&alloc, source).parse();
-        assert!(errs.is_empty());
+        let file = aes_testing::file_ref(&alloc, source);
+        let mut reporter = aes_testing::Reporter::default();
+        let ast = aes_parser::Parser::new(file, &mut reporter).parse();
+        assert!(reporter.is_clean());
 
-        let mut ctx = Context::new(&alloc, source, 8, aes_testing::Reporter::default());
+        let mut ctx = Context::new(file, 8, &mut reporter);
         declare_schema(&mut ctx, &ast);
         assert!(ctx.reporter.is_clean());
 
         verify_schema(&mut ctx, &ast);
 
-        ctx.reporter
+        reporter
     }
 
     mod type_ref {
@@ -507,6 +524,89 @@ mod tests {
                 source,
                 &reporter.diagnostics
             ));
+        }
+    }
+
+    mod relation_operations {
+        use super::*;
+
+        #[test]
+        fn union_in_relation_no_errors() {
+            let source = indoc! {r#"
+                type group {
+                  let member = user;
+                }
+
+                type user {
+                  let member = user | group::member;
+                }
+            "#};
+            let reporter = run(source);
+            assert!(reporter.is_clean());
+        }
+
+        #[test]
+        fn intersection_in_relation_emits_error() {
+            let source = indoc! {r#"
+                type approved {}
+
+                type user {
+                  let member = user & approved;
+                }
+            "#};
+            let reporter = run(source);
+            assert_code(&reporter, "aes::semantic(binary_op_in_relation)");
+            insta::assert_snapshot!(aes_testing::render_diagnostics(
+                source,
+                &reporter.diagnostics
+            ));
+        }
+
+        #[test]
+        fn exclusion_in_relation_emits_error() {
+            let source = indoc! {r#"
+                type bot {}
+
+                type user {
+                  let member = user - bot;
+                }
+            "#};
+            let reporter = run(source);
+            assert_code(&reporter, "aes::semantic(binary_op_in_relation)");
+            insta::assert_snapshot!(aes_testing::render_diagnostics(
+                source,
+                &reporter.diagnostics
+            ));
+        }
+
+        #[test]
+        fn intersection_in_permission_no_errors() {
+            let source = indoc! {r#"
+                type user {
+                  let approved = user;
+                  let active = user;
+
+                  def member = .approved & .active;
+                }
+            "#};
+            let reporter = run(source);
+            assert!(reporter.is_clean());
+        }
+
+        #[test]
+        fn exclusion_in_permission_no_errors() {
+            let source = indoc! {r#"
+                type user {
+                  let approved = user;
+                  let active = user;
+
+                  def member = .approved - .active;
+                }
+            "#};
+            let reporter = run(source);
+
+            dbg!(&reporter.diagnostics);
+            assert!(reporter.is_clean());
         }
     }
 }

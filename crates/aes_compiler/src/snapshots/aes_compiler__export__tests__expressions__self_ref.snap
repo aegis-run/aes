@@ -1,0 +1,21 @@
+---
+source: crates/aes_compiler/src/export.rs
+expression: "schema.types[1].permissions[0].expr"
+---
+Some(
+    Expression {
+        kind: Some(
+            Term(
+                TermExpr {
+                    term: Some(
+                        SelfRef(
+                            SelfRef {
+                                relation: "owner",
+                            },
+                        ),
+                    ),
+                },
+            ),
+        ),
+    },
+)

@@ -4,13 +4,15 @@ use crate::Visitor;
 
 pub fn walk_type_def<'src>(visit: &mut impl Visitor<'src>, id: TypeDefId) {
     let ty = visit.ast().types().at(id);
+    let lets = ty.lets();
+    let defs = ty.defs();
 
-    for let_ref in visit.ast().lets().range(ty.lets()) {
-        visit.let_member(let_ref.id());
+    for let_id in lets.iter() {
+        visit.let_member(let_id);
     }
 
-    for def_ref in visit.ast().defs().range(ty.defs()) {
-        visit.def_member(def_ref.id());
+    for def_id in defs.iter() {
+        visit.def_member(def_id);
     }
 }
 

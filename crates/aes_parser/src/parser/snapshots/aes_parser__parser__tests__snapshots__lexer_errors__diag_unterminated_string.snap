@@ -1,0 +1,49 @@
+---
+source: crates/aes_parser/src/parser/tests.rs
+expression: "aes_testing::render_diagnostics(source, &reporter.diagnostics)"
+---
+aes::lexer(unterminated_string_literal)
+
+  × unterminated string literal
+   ╭─[test.aes:2:11]
+ 1 │     type t {
+ 2 │ ╭─▶   let x = "oops
+ 3 │ ├─▶ }
+   · ╰──── string starts here
+   ╰────
+  help: add a closing `"` to terminate the string
+
+---
+
+aes::parser(expected_term)
+
+  × expected expression term, found end of file
+   ╭─[test.aes:4:1]
+ 3 │ }
+   ╰────
+
+---
+
+aes::parser(missing_semicolon)
+
+  × missing semicolon
+   ╭─[test.aes:2:9]
+ 1 │ type t {
+ 2 │   let x = "oops
+   ·         ┬
+   ·         ╰── expected ';' after this
+ 3 │ }
+   ╰────
+
+---
+
+aes::parser(unclosed_delimiter)
+
+  × unclosed '{'
+   ╭─[test.aes:1:8]
+ 1 │ type t {
+   ·        ┬
+   ·        ╰── opening '{' here
+ 2 │   let x = "oops
+ 3 │ }
+   ╰────

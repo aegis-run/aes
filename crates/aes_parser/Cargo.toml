@@ -16,5 +16,8 @@ aes_ast.workspace = true
 aes_foundation.workspace = true
 
 [dev-dependencies]
+aes_testing.workspace = true
+
+indoc.workspace = true
 insta.workspace = true
 proptest.workspace = true

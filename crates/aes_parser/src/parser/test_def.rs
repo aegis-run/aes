@@ -1,9 +1,9 @@
 use aes_ast::{AssertRange, Instance, RelationRange, SubjectId};
-use aes_foundation::Span;
+use aes_foundation::{Reporter, Span};
 
 use crate::{Parser, errors, token::TokenKind};
 
-impl<'src> Parser<'src> {
+impl<'src, R: Reporter> Parser<'src, R> {
     pub(crate) fn test_def(&mut self) {
         let start = self.start_span();
 
@@ -23,8 +23,7 @@ impl<'src> Parser<'src> {
 
     fn relations(&mut self, start: u32, name: Span) -> Option<RelationRange> {
         if !self.eat(TokenKind::KwRelations) {
-            self.errors
-                .push(errors::missing_relations_block(self.token));
+            self.report(errors::missing_relations_block(self.token));
 
             self.ast.test_def(
                 self.end_span(start),
@@ -43,11 +42,11 @@ impl<'src> Parser<'src> {
                     TokenKind::RBrace | TokenKind::Eof => break,
                     TokenKind::Ident => p.relation_stmt(),
                     TokenKind::KwAssert | TokenKind::KwAssertNot => {
-                        p.errors.push(errors::assert_before_relations(p.token));
+                        p.report(errors::assert_before_relations(p.token));
                         break;
                     }
                     _ => {
-                        p.errors.push(errors::unexpected_token(p.token));
+                        p.report(errors::unexpected_token(p.token));
                         p.skip_while(|k| !matches!(k, TokenKind::Ident | TokenKind::RBrace));
                     }
                 }
@@ -73,8 +72,7 @@ impl<'src> Parser<'src> {
                             }
 
                             _ => {
-                                p.errors
-                                    .push(errors::expected_relation_name_or_block(p.token));
+                                p.report(errors::expected_relation_name_or_block(p.token));
                                 p.skip_while(|k| !matches!(k, TokenKind::Dot | TokenKind::RBrace));
                             }
                         }
@@ -86,7 +84,7 @@ impl<'src> Parser<'src> {
             TokenKind::Ident => self.relation_assign(resource),
 
             _ => {
-                self.errors.push(errors::unexpected_token(self.token));
+                self.report(errors::unexpected_token(self.token));
                 self.skip_while(|k| !matches!(k, TokenKind::Ident | TokenKind::RBrace));
             }
         }
@@ -113,8 +111,7 @@ impl<'src> Parser<'src> {
                 TokenKind::RBrace | TokenKind::Eof => break,
                 TokenKind::KwAssert | TokenKind::KwAssertNot => self.assert_stmt(),
                 TokenKind::KwRelations => {
-                    self.errors
-                        .push(errors::duplicate_relations_block(self.token));
+                    self.report(errors::duplicate_relations_block(self.token));
 
                     self.skip();
                     self.braced(|p| {
@@ -124,7 +121,7 @@ impl<'src> Parser<'src> {
                     });
                 }
                 _ => {
-                    self.errors.push(errors::unexpected_token(self.token));
+                    self.report(errors::unexpected_token(self.token));
                     self.skip_while(|k| {
                         !matches!(
                             k,
@@ -154,8 +151,7 @@ impl<'src> Parser<'src> {
                 aes_ast::AssertionKind::AssertNot
             }
             _ => {
-                self.errors.push(errors::unexpected_token(self.token));
-                return;
+                return self.report(errors::unexpected_token(self.token));
             }
         };
 
@@ -182,8 +178,7 @@ impl<'src> Parser<'src> {
         let instance = self.instance();
         let permission = if self.eat(TokenKind::ColonColon) {
             if !self.at(TokenKind::Ident) {
-                self.errors
-                    .push(errors::expected_permission_after_colons(self.token));
+                self.report(errors::expected_permission_after_colons(self.token));
             }
             Some(self.ident())
         } else {
@@ -196,7 +191,7 @@ impl<'src> Parser<'src> {
     #[must_use]
     fn instance(&mut self) -> aes_ast::Instance {
         if !self.at(TokenKind::Ident) {
-            self.errors.push(errors::expected_type_name(self.token));
+            self.report(errors::expected_type_name(self.token));
         }
         let ty = self.ident();
         let ident = self.parenthesized(|p| p.string());
@@ -209,117 +204,162 @@ impl<'src> Parser<'src> {
 mod tests {
     use aes_allocator::Allocator;
     use aes_ast::*;
+    use indoc::indoc;
 
     use crate::parser::tests::parse;
 
     #[test]
     fn basic() {
-        let alloc = Allocator::new();
-        let r = parse(&alloc, r#"test "basic" { relations {} }"#);
-        r.has_no_errors();
-        assert_eq!(r.ast.tests().len(), 1);
+        let source = indoc! {r#"
+            test "basic" {
+              relations {}
+            }
+        "#};
 
-        let t = r.ast.tests().at(TestDefId::new(0));
-        assert_eq!(r.text(t.name()), r#""basic""#);
+        let alloc = Allocator::new();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        assert_eq!(ast.tests().len(), 1);
+        let t = ast.tests().at(TestDefId::new(0));
+        assert_eq!(t.name().text(source), r#""basic""#);
         assert!(t.relations().is_empty());
         assert!(t.asserts().is_empty());
     }
 
     #[test]
     fn inline_relation() {
-        let source = r#"test "t" { relations { org("acme") .owner: user("alice"); } }"#;
+        let source = indoc! {r#"
+            test "t" {
+              relations {
+                org("acme") .owner: user("alice");
+              }
+            }
+        "#};
+
         let alloc = Allocator::new();
-        let r = parse(&alloc, source);
-        r.has_no_errors();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
 
-        assert_eq!(r.ast.relations().len(), 1);
-        let rel = r.ast.relations().at(RelationId::new(0));
-        assert_eq!(r.text(rel.resource().ty()), "org");
-        assert_eq!(r.text(rel.resource().ident()), r#""acme""#);
-        assert_eq!(r.text(rel.relation()), "owner");
+        assert_eq!(ast.relations().len(), 1);
+        let rel = ast.relations().at(RelationId::new(0));
+        assert_eq!(rel.resource().ty().text(source), "org");
+        assert_eq!(rel.resource().ident().text(source), r#""acme""#);
+        assert_eq!(rel.relation().text(source), "owner");
 
-        let subj = r.ast.subjects().at(rel.subject());
-        assert_eq!(r.text(subj.instance().ty()), "user");
-        assert_eq!(r.text(subj.instance().ident()), r#""alice""#);
+        let subj = ast.subjects().at(rel.subject());
+        assert_eq!(subj.instance().ty().text(source), "user");
+        assert_eq!(subj.instance().ident().text(source), r#""alice""#);
         assert!(subj.permission().is_none());
     }
 
     #[test]
     fn block_relations() {
-        let source = r#"test "t" {
-            relations {
+        let source = indoc! {r#"
+            test "t" {
+              relations {
                 org("acme") .{
-                    .owner: user("alice");
-                    .member: user("bob");
+                  .owner: user("alice");
+                  .member: user("bob");
                 };
+              }
             }
-        }"#;
-        let alloc = Allocator::new();
-        let r = parse(&alloc, source);
-        r.has_no_errors();
-        assert_eq!(r.ast.relations().len(), 2);
+        "#};
 
+        let alloc = Allocator::new();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        assert_eq!(ast.relations().len(), 2);
         assert_eq!(
-            r.text(r.ast.relations().at(RelationId::new(0)).relation()),
+            ast.relations()
+                .at(RelationId::new(0))
+                .relation()
+                .text(source),
             "owner"
         );
         assert_eq!(
-            r.text(r.ast.relations().at(RelationId::new(1)).relation()),
+            ast.relations()
+                .at(RelationId::new(1))
+                .relation()
+                .text(source),
             "member"
         );
     }
 
     #[test]
     fn subject_with_permission() {
-        let source = r#"test "t" { relations { repo("x") .writer: team("dev")::member; } }"#;
+        let source = indoc! {r#"
+            test "t" {
+              relations {
+                repo("x") .writer: team("dev")::member;
+              }
+            }
+        "#};
+
         let alloc = Allocator::new();
-        let r = parse(&alloc, source);
-        r.has_no_errors();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
 
-        let rel = r.ast.relations().at(RelationId::new(0));
-        let subj = r.ast.subjects().at(rel.subject());
+        let rel = ast.relations().at(RelationId::new(0));
+        let subj = ast.subjects().at(rel.subject());
 
-        assert_eq!(r.text(subj.instance().ty()), "team");
+        assert_eq!(subj.instance().ty().text(source), "team");
         assert!(subj.permission().is_some());
-        assert_eq!(r.text(subj.permission().unwrap()), "member");
+        assert_eq!(subj.permission().unwrap().text(source), "member");
     }
 
     #[test]
     fn with_assertions() {
-        let source = r#"test "t" {
-            relations { org("a") .owner: user("alice"); }
-            assert( org("a").manage( user("alice") ) );
-            assert_not( org("a").delete( user("bob") ) );
-        }"#;
+        let source = indoc! {r#"
+            test "t" {
+              relations {
+                org("a") .owner: user("alice");
+              }
+
+              assert( org("a").manage( user("alice") ) );
+              assert_not( org("a").delete( user("bob") ) );
+            }
+        "#};
+
         let alloc = Allocator::new();
-        let r = parse(&alloc, source);
-        r.has_no_errors();
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
 
-        assert_eq!(r.ast.asserts().len(), 2);
+        assert_eq!(ast.asserts().len(), 2);
 
-        let a0 = r.ast.asserts().at(AssertId::new(0));
+        let a0 = ast.asserts().at(AssertId::new(0));
         assert_eq!(a0.kind(), AssertionKind::Assert);
-        assert_eq!(r.text(a0.permission()), "manage");
+        assert_eq!(a0.permission().text(source), "manage");
 
-        let a1 = r.ast.asserts().at(AssertId::new(1));
+        let a1 = ast.asserts().at(AssertId::new(1));
         assert_eq!(a1.kind(), AssertionKind::AssertNot);
-        assert_eq!(r.text(a1.permission()), "delete");
+        assert_eq!(a1.permission().text(source), "delete");
     }
 
     #[test]
     fn types_and_tests_together() {
-        let source = r#"
+        let source = indoc! {r#"
             type user {}
-            type org { let owner = user; }
-            test "flow" {
-                relations { org("a") .owner: user("x"); }
-                assert( org("a").owner( user("x") ) );
+
+            type org {
+              let owner = user;
             }
-        "#;
+
+            test "flow" {
+              relations {
+                org("a") .owner: user("x");
+              }
+
+              assert( org("a").owner( user("x") ) );
+            }
+        "#};
+
         let alloc = Allocator::new();
-        let r = parse(&alloc, source);
-        r.has_no_errors();
-        assert_eq!(r.ast.types().len(), 2);
-        assert_eq!(r.ast.tests().len(), 1);
+        let (ast, reporter) = parse(&alloc, source);
+        assert!(reporter.is_clean());
+
+        assert_eq!(ast.types().len(), 2);
+        assert_eq!(ast.tests().len(), 1);
     }
 }

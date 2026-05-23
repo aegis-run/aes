@@ -51,23 +51,23 @@ impl<'src> Visitor<'src> for Recorder<'src> {
         walk_expr(self, id);
     }
 
-    fn expr_self_ref(&mut self, _: ExprTermSelfRef) {
+    fn expr_self_ref(&mut self, _: aes_ast::ExprId, _: ExprTermSelfRef) {
         self.evts.push(Evt::ExprSelfRef);
     }
 
-    fn expr_traversal(&mut self, _: ExprTermTraversal) {
+    fn expr_traversal(&mut self, _: aes_ast::ExprId, _: ExprTermTraversal) {
         self.evts.push(Evt::ExprTraversal);
     }
 
-    fn expr_type_ref(&mut self, _: ExprTermTypeRef) {
+    fn expr_type_ref(&mut self, _: aes_ast::ExprId, _: ExprTermTypeRef) {
         self.evts.push(Evt::ExprTypeRef);
     }
 
-    fn expr_userset_type_ref(&mut self, _: ExprTermUsersetTypeRef) {
+    fn expr_userset_type_ref(&mut self, _: aes_ast::ExprId, _: ExprTermUsersetTypeRef) {
         self.evts.push(Evt::ExprUsersetTypeRef);
     }
 
-    fn expr_binary(&mut self, _: ExprTermBinary) {
+    fn expr_binary(&mut self, _: aes_ast::ExprId, _: ExprTermBinary) {
         self.evts.push(Evt::ExprBinary);
     }
 

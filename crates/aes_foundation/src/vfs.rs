@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use aes_allocator::Allocator;
 use rustc_hash::FxHashMap;
 
@@ -5,7 +7,7 @@ use crate::Id;
 
 /// An in-memory representation of a source file and its associated resources.
 pub struct File {
-    path: String,
+    path: PathBuf,
     source: String,
     alloc: aes_allocator::Allocator,
 }
@@ -20,18 +22,29 @@ pub type FileId = Id<File>;
 #[derive(Debug, Clone, Copy)]
 pub struct FileRef<'a> {
     id: FileId,
+    path: &'a Path,
     alloc: &'a aes_allocator::Allocator,
     source: &'a str,
 }
 
 impl<'a> FileRef<'a> {
-    pub fn new(id: FileId, alloc: &'a Allocator, source: &'a str) -> Self {
-        Self { id, alloc, source }
+    pub fn new(id: FileId, path: &'a Path, alloc: &'a Allocator, source: &'a str) -> Self {
+        Self {
+            id,
+            path,
+            alloc,
+            source,
+        }
     }
 
     /// Returns the unique identifier for this file.
     pub fn id(&self) -> FileId {
         self.id
+    }
+
+    /// Returns the path to the file.
+    pub fn path(&self) -> &'a Path {
+        self.path
     }
 
     /// Returns the source code of the file.
@@ -64,7 +77,7 @@ impl Vfs {
         ret
     }
 
-    pub fn add(&mut self, path: impl Into<String>, source: impl Into<String>) -> FileId {
+    pub fn add(&mut self, path: &Path, source: impl Into<String>) -> FileId {
         let id = self.gen_id();
 
         self.files.insert(
@@ -81,6 +94,6 @@ impl Vfs {
 
     pub fn get(&self, id: FileId) -> Option<FileRef<'_>> {
         let file = self.files.get(&id)?;
-        Some(FileRef::new(id, &file.alloc, &file.source))
+        Some(FileRef::new(id, &file.path, &file.alloc, &file.source))
     }
 }

@@ -1,0 +1,23 @@
+name: "Setup Nix"
+description: "Setup Nix with caching for GitHub Actions"
+
+inputs:
+  cache-primary-key:
+    description: "Primary cache key (default: auto-generated from flake.lock)"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Nix
+      uses: DeterminateSystems/nix-installer-action@main
+
+    - name: Cache Nix store
+      uses: nix-community/cache-nix-action@v7
+      with:
+        primary-key: ${{ inputs.cache-primary-key != '' && inputs.cache-primary-key || format('nix-{0}-flake-{1}', runner.os, hashFiles('flake.lock')) }}
+        upload-chunk-size: 268435456
+        gc-max-store-size-linux: 2147483648
+        purge: true
+        purge-created: 0

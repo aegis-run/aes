@@ -11,6 +11,11 @@ default:
 # Development                                                          #
 # ------------------------------------------------------------------ #
 
+# Run the server
+[group("development")]
+run *args:
+    cargo run -- {{ args }}
+
 # Format all code
 [group("development")]
 fmt:

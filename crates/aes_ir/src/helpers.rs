@@ -1,9 +1,14 @@
 use crate::v1;
+use prost::Message;
 
 impl v1::Schema {
     /// Creates a new schema from a list of type definitions.
     pub fn new(types: Vec<v1::TypeDefinition>) -> Self {
         Self { types }
+    }
+
+    pub fn encode_bytes(&self) -> Vec<u8> {
+        self.encode_to_vec()
     }
 }
 

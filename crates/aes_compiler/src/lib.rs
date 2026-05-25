@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use aes_foundation::{Reporter, vfs};
 
 mod export;
@@ -14,7 +16,7 @@ pub struct Compiler {
 
 impl Compiler {
     /// Adds a new file to the compiler's VFS and returns its unique identifier.
-    pub fn add_file(&mut self, path: String, source: String) -> vfs::FileId {
+    pub fn add_file(&mut self, path: &Path, source: String) -> vfs::FileId {
         self.vfs.add(path, source)
     }
 

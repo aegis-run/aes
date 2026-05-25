@@ -12,5 +12,14 @@ description.workspace = true
 
 [dependencies]
 aes_allocator.workspace = true
+aes_compiler.workspace = true
 aes_foundation.workspace = true
+aes_ir.workspace = true
 aes_parser.workspace = true
+aes_semantic.workspace = true
+anstyle = "1.0.14"
+
+clap = { version = "4.6.1", features = ["derive", "env", "std", "color"] }
+simdutf8 = "0.1.5"
+thiserror.workspace = true
+tokio.workspace = true

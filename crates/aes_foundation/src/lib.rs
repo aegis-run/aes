@@ -8,7 +8,7 @@
 //! * **Diagnostics**: A rich [`Diagnostic`] builder wrapping `miette`, and a [`Reporter`] interface for emitting them.
 //! * **Source Span Tracking**: The highly-optimzed [`Span`] struct to track byte ranges.
 mod const_assert;
-mod diagnostic;
+pub mod diagnostic;
 mod id;
 pub mod interner;
 pub mod prelude;

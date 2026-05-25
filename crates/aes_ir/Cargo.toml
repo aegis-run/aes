@@ -12,5 +12,6 @@ description.workspace = true
 
 [dependencies]
 prost.workspace = true
+thiserror.workspace = true
 tonic = "0.14.6"
 tonic-prost = "0.14.6"

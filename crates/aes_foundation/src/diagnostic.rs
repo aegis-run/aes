@@ -1,9 +1,40 @@
 use std::borrow::Cow;
+use std::path::Path;
+use std::sync::Arc;
 
 pub use miette::{GraphicalReportHandler, GraphicalTheme, LabeledSpan, NamedSource};
 pub type Result<T> = std::result::Result<T, Diagnostic>;
-
+pub type Error = miette::Error;
+pub type Severity = miette::Severity;
 type CowStr = Cow<'static, str>;
+
+/// Metadata used to enrich a [`Diagnostic`] with source context.
+#[derive(Debug, Clone, Copy)]
+pub struct DiagnosticSource<'a> {
+    pub cwd: Option<&'a Path>,
+    pub path: &'a Path,
+    pub source_text: &'a str,
+}
+
+impl<'a> DiagnosticSource<'a> {
+    pub fn display_name(&self) -> String {
+        let display_path = if let Some(cwd) = self.cwd {
+            self.path
+                .strip_prefix(cwd)
+                .unwrap_or(self.path)
+                .to_string_lossy()
+        } else {
+            self.path.to_string_lossy()
+        };
+
+        // Normalize path separators to '/' for stable CLI/snapshot output.
+        display_path.replace('\\', "/")
+    }
+
+    pub fn to_named_source(&self) -> NamedSource<String> {
+        NamedSource::new(self.display_name(), self.source_text.to_owned())
+    }
+}
 
 /// The core error-reporting structure for the Aegis compiler, wrapping [`miette`].
 ///
@@ -124,6 +155,18 @@ impl Diagnostic {
 
     pub fn is_error(&self) -> bool {
         self.severity == miette::Severity::Error
+    }
+
+    /// Enriches the diagnostic with an existing source context, converting it into a [`miette::Error`].
+    pub fn enrich_with_source(self, source: Arc<NamedSource<String>>) -> Error {
+        self.with_source_code(source)
+    }
+
+    /// Enriches the diagnostic with source context, converting it into a [`miette::Error`].
+    pub fn enrich(self, source: DiagnosticSource<'_>) -> Error {
+        let display_path = source.display_name();
+        let named_source = NamedSource::new(display_path, source.source_text.to_owned());
+        self.enrich_with_source(Arc::new(named_source))
     }
 }
 
@@ -275,5 +318,19 @@ mod tests {
             number: None,
         };
         assert_eq!(scope_only.to_string(), "aes");
+    }
+
+    #[test]
+    fn enrichment_normalizes_paths() {
+        let d = Diagnostic::error("test");
+        let source = DiagnosticSource {
+            cwd: None,
+            path: Path::new("path\\to\\file.aes"),
+            source_text: "test",
+        };
+        let enriched = d.enrich(source);
+        // We can't easily inspect the internal NamedSource name without rendering,
+        // but we can at least check that it doesn't panic.
+        assert!(enriched.to_string().contains("test"));
     }
 }

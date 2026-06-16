@@ -605,7 +605,6 @@ mod tests {
             "#};
             let reporter = run(source);
 
-            dbg!(&reporter.diagnostics);
             assert!(reporter.is_clean());
         }
     }

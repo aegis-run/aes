@@ -190,12 +190,12 @@ impl<'src> AstBuilder<'src> {
 #[derive(Debug, Clone, Copy)]
 pub struct Instance {
     ty: Span,
-    ident: Span,
+    id: Span,
 }
 
 impl Instance {
-    pub fn new(ty: Span, ident: Span) -> Self {
-        Self { ty, ident }
+    pub fn new(ty: Span, id: Span) -> Self {
+        Self { ty, id }
     }
 
     #[inline]
@@ -204,7 +204,7 @@ impl Instance {
     }
 
     #[inline]
-    pub const fn ident(&self) -> Span {
-        self.ident
+    pub const fn id(&self) -> Span {
+        self.id
     }
 }

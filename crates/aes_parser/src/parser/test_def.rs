@@ -244,12 +244,12 @@ mod tests {
         assert_eq!(ast.relations().len(), 1);
         let rel = ast.relations().at(RelationId::new(0));
         assert_eq!(rel.resource().ty().text(source), "org");
-        assert_eq!(rel.resource().ident().text(source), r#""acme""#);
+        assert_eq!(rel.resource().id().text(source), r#""acme""#);
         assert_eq!(rel.relation().text(source), "owner");
 
         let subj = ast.subjects().at(rel.subject());
         assert_eq!(subj.instance().ty().text(source), "user");
-        assert_eq!(subj.instance().ident().text(source), r#""alice""#);
+        assert_eq!(subj.instance().id().text(source), r#""alice""#);
         assert!(subj.permission().is_none());
     }
 

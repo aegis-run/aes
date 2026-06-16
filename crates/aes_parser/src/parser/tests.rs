@@ -95,7 +95,6 @@ mod error_recovery {
         let (ast, reporter) = parse(&alloc, source);
         assert!(!reporter.is_clean());
 
-        dbg!(&reporter.diagnostics);
         assert_code(&reporter, "aes::lexer(unexpected_character)");
 
         // let member should still be parsed after recovery
@@ -269,10 +268,10 @@ mod realistic {
         let a0 = ast.asserts().at(aes_ast::AssertId::new(0));
         assert_eq!(a0.kind(), AssertionKind::Assert);
         assert_eq!(a0.resource().ty().text(source), "organization");
-        assert_eq!(a0.resource().ident().text(source), r#""acme""#);
+        assert_eq!(a0.resource().id().text(source), r#""acme""#);
         assert_eq!(a0.permission().text(source), "manage_billing");
         assert_eq!(a0.actor().ty().text(source), "user");
-        assert_eq!(a0.actor().ident().text(source), r#""alice""#);
+        assert_eq!(a0.actor().id().text(source), r#""alice""#);
 
         // Verify last assertion is assert_not
         let a2 = ast.asserts().at(aes_ast::AssertId::new(2));

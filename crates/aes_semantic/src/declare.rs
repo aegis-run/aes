@@ -201,7 +201,6 @@ mod tests {
             "#};
             let reporter = run(source);
 
-            println!("{:?}", reporter.diagnostics);
             assert!(reporter.is_clean());
         }
 

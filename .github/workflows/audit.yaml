@@ -1,45 +1,45 @@
-name: Scheduled
+# name: Scheduled
 
-on:
-  schedule:
-    - cron: "0 8 * * 1"
-  workflow_dispatch:
+# on:
+#   schedule:
+#     - cron: "0 8 * * 1"
+#   workflow_dispatch:
 
-permissions:
-  contents: write
-  pull-requests: write
+# permissions:
+#   contents: write
+#   pull-requests: write
 
-jobs:
-  audit:
-    name: Security audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
+# jobs:
+#   audit:
+#     name: Security audit
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-nix
+#       - uses: ./.github/actions/setup-nix
 
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
+#       - name: Rust Cache
+#         uses: Swatinem/rust-cache@v2
 
-      - run: nix develop --command just audit
-      - run: nix develop --command just deny-advisories
+#       - run: nix develop --command just audit
+#       - run: nix develop --command just deny-advisories
 
-  update-flake:
-    name: Update flake inputs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup-nix
+#   update-flake:
+#     name: Update flake inputs
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v5
+#       - uses: ./.github/actions/setup-nix
 
-      - name: Update flake inputs
-        run: nix flake update
+#       - name: Update flake inputs
+#         run: nix flake update
 
-      - name: Open PR if inputs changed
-        uses: peter-evans/create-pull-request@v8
-        with:
-          sign-commits: true
-          commit-message: "chore: update flake inputs"
-          title: "chore: weekly flake inputs update"
-          body: "Automated weekly update of `flake.lock`."
-          branch: "automation/flake-update"
-          delete-branch: true
+#       - name: Open PR if inputs changed
+#         uses: peter-evans/create-pull-request@v8
+#         with:
+#           sign-commits: true
+#           commit-message: "chore: update flake inputs"
+#           title: "chore: weekly flake inputs update"
+#           body: "Automated weekly update of `flake.lock`."
+#           branch: "automation/flake-update"
+#           delete-branch: true

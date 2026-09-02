@@ -1,0 +1,32 @@
+type user {}
+
+type group {
+  let member = user;
+}
+
+type organization {
+  let admin = user;
+  let member = user | group::member;
+}
+
+type directory {
+  let organization = organization;
+  let viewer = user | group::member;
+  let editor = user;
+  let parent = directory;
+
+  def view = .viewer | .editor | .parent.view;
+  def edit = .editor & .organization.member;
+  def delete = .organization.admin - .viewer;
+}
+
+type document {
+  let directory = directory;
+  let owner = user;
+  let commenter = user | group::member;
+
+  def view = .owner | .commenter | .directory.view;
+  def edit = .owner | .directory.edit;
+  def comment = .commenter | .owner;
+  def delete = .owner & .directory.delete;
+}

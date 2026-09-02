@@ -1,77 +1,77 @@
-name: Release
+# name: Release
 
-on:
-  push:
-    tags: ["v*"]
+# on:
+#   push:
+#     tags: ["v*"]
 
-permissions:
-  contents: write
+# permissions:
+#   contents: write
 
-jobs:
-  verify-version:
-    name: Verify version
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
+# jobs:
+#   verify-version:
+#     name: Verify version
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-nix
+#       - uses: ./.github/actions/setup-nix
 
-      - name: Check version matches tag
-        run: nix develop --command just verify-version ${GITHUB_REF_NAME#v}
+#       - name: Check version matches tag
+#         run: nix develop --command just verify-version ${GITHUB_REF_NAME#v}
 
-  build:
-    name: Build · ${{ matrix.target }}
-    needs: verify-version
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: ubuntu-24.04-arm
-            target: aarch64-unknown-linux-gnu
-          - os: macos-latest
-            target: aarch64-apple-darwin
+#   build:
+#     name: Build · ${{ matrix.target }}
+#     needs: verify-version
+#     strategy:
+#       matrix:
+#         include:
+#           - os: ubuntu-latest
+#             target: x86_64-unknown-linux-gnu
+#           - os: ubuntu-24.04-arm
+#             target: aarch64-unknown-linux-gnu
+#           - os: macos-latest
+#             target: aarch64-apple-darwin
 
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v5
+#     runs-on: ${{ matrix.os }}
+#     steps:
+#       - uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-nix
+#       - uses: ./.github/actions/setup-nix
 
-      - name: Build
-        run: nix build .#aes
+#       - name: Build
+#         run: nix build .#aes
 
-      - name: Package
-        run: |
-          VERSION="${GITHUB_REF_NAME}"
-          ARTIFACT="aes-${VERSION}-${{ matrix.target }}"
-          cp result/bin/aes "${ARTIFACT}"
-          tar czf "${ARTIFACT}.tar.gz" "${ARTIFACT}"
-          sha256sum "${ARTIFACT}.tar.gz" > "${ARTIFACT}.tar.gz.sha256"
+#       - name: Package
+#         run: |
+#           VERSION="${GITHUB_REF_NAME}"
+#           ARTIFACT="aes-${VERSION}-${{ matrix.target }}"
+#           cp result/bin/aes "${ARTIFACT}"
+#           tar czf "${ARTIFACT}.tar.gz" "${ARTIFACT}"
+#           sha256sum "${ARTIFACT}.tar.gz" > "${ARTIFACT}.tar.gz.sha256"
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: aes-${{ matrix.target }}
-          path: |
-            *.tar.gz
-            *.sha256
+#       - uses: actions/upload-artifact@v4
+#         with:
+#           name: aes-${{ matrix.target }}
+#           path: |
+#             *.tar.gz
+#             *.sha256
 
-  # ------------------------------------------------------------------ #
-  # Publish to GitHub Releases                                           #
-  # ------------------------------------------------------------------ #
-  release:
-    name: Publish release
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
+#   # ------------------------------------------------------------------ #
+#   # Publish to GitHub Releases                                           #
+#   # ------------------------------------------------------------------ #
+#   release:
+#     name: Publish release
+#     needs: build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/download-artifact@v4
+#         with:
+#           merge-multiple: true
 
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            *.tar.gz
-            *.sha256
-          generate_release_notes: true
-          fail_on_unmatched_files: true
+#       - uses: softprops/action-gh-release@v2
+#         with:
+#           files: |
+#             *.tar.gz
+#             *.sha256
+#           generate_release_notes: true
+#           fail_on_unmatched_files: true

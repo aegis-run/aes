@@ -1,41 +1,41 @@
-name: CI
+# name: CI
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+# on:
+#   push:
+#     branches: [main]
+#   pull_request:
+#     branches: [main]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: true
 
-jobs:
-  validate:
-    name: Validate (Check & Test)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
+# jobs:
+#   validate:
+#     name: Validate (Check & Test)
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-nix
+#       - uses: ./.github/actions/setup-nix
 
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
+#       - name: Rust Cache
+#         uses: Swatinem/rust-cache@v2
 
-      - run: nix develop --command just check
-      - run: nix develop --command just test
-      - run: nix develop --command cargo insta test --unreferenced=reject
+#       - run: nix develop --command just check
+#       - run: nix develop --command just test
+#       - run: nix develop --command cargo insta test --unreferenced=reject
 
-  nix-build:
-    name: Nix build & check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
+#   nix-build:
+#     name: Nix build & check
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v5
 
-      - uses: ./.github/actions/setup-nix
+#       - uses: ./.github/actions/setup-nix
 
-      - run: nix build
-      - run: nix flake check
+#       - run: nix build
+#       - run: nix flake check

@@ -1,0 +1,47 @@
+type user {}
+
+type team {
+    let parent = organization | team;
+    let maintainer = user;
+    let direct_member = user;
+
+    def member = .maintainer | .direct_member;
+    def change_team_name = .maintainer | .parent.change_team_name;
+}
+
+type organization {
+    let owner = user;
+    let member = user;
+    let billing_manager = user;
+    let team_maintainer = user;
+
+    def create_repository = .owner | .member;
+    def manage_billing = .owner | .billing_manager;
+    def user_seat = .owner | .member | .team_maintainer;
+    def change_team_name = .team_maintainer | .owner;
+}
+
+type repository {
+    let organization = organization;
+
+    let reader = user | team::direct_member;
+    let triager = user | team::direct_member;
+    let writer = user | team::direct_member;
+    let maintainer = user | team::direct_member;
+    let admin = user | team::direct_member;
+
+    def push = .writer | .maintainer | .admin | .organization.owner;
+    def clone = .reader | .triager | .push;
+    def read = .clone | .organization.owner;
+    def delete = .admin | .organization.owner;
+
+    def create_issue = .read;
+    def close_issue = .triager | .writer | .maintainer | .admin | .organization.owner;
+
+    def create_pull_request = .read;
+    def merge_pull_request = .maintainer | .organization.owner;
+    def close_pull_request = .close_issue;
+
+    def manage_setting = .maintainer | .admin | .organization.owner;
+    def manage_sensitive_setting = .admin | .organization.owner;
+}
